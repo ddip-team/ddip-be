@@ -32,9 +32,10 @@ public class Event {
 
     private LocalDateTime end;
 
-    @OneToMany
+    @OneToMany(mappedBy = "event")
     private List<Permit> permits;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
     private Member member;
 }

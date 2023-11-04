@@ -20,9 +20,7 @@ public class Permit {
 
     private String token;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
     private Event event;
-
-    @OneToMany
-    private List<Member> members;
 }
