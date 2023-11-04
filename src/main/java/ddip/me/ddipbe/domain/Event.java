@@ -33,7 +33,7 @@ public class Event {
     private LocalDateTime end;
 
     @OneToMany
-    private List<Permitted> permitteds;
+    private List<Permit> permits;
 
     @ManyToOne
     private Member member;
