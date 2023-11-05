@@ -14,4 +14,16 @@ public class ResponseEnvelope<T> {
         this.data = data;
         this.message = httpStatus.getReasonPhrase();
     }
+
+    public ResponseEnvelope(HttpStatus httpStatus, String message) {
+        this.httpStatus = httpStatus;
+        this.data=null;
+        this.message = message;
+    }
+
+    public ResponseEnvelope(HttpStatus httpStatus, T data, String message) {
+        this.httpStatus = httpStatus;
+        this.data = data;
+        this.message = message;
+    }
 }
