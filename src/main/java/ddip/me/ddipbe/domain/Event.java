@@ -32,7 +32,7 @@ public class Event {
 
     private LocalDateTime end;
 
-    @OneToMany(mappedBy = "event")
+    @OneToMany(mappedBy = "event",orphanRemoval = true,cascade = CascadeType.ALL)
     private List<Permit> permits;
 
     @ManyToOne(fetch = FetchType.LAZY)
