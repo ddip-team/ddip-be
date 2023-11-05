@@ -12,18 +12,18 @@ public class ResponseEnvelope<T> {
     public ResponseEnvelope(String code, T data) {
         this.code = code;
         this.data = data;
-        this.message=null;
+        this.message = null;
     }
 
     public ResponseEnvelope(String code) {
         this.code = code;
-        this.data=null;
-        this.message=null;
+        this.data = null;
+        this.message = null;
     }
 
     public ResponseEnvelope(String code, String message) {
         this.code = code;
-        this.data=null;
+        this.data = null;
         this.message = message;
     }
 
