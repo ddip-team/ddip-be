@@ -5,25 +5,26 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class ResponseEnvelope<T> {
-    private final HttpStatus httpStatus;
+    private final String code;
     private final T data;
     private String message;
 
-    public ResponseEnvelope(HttpStatus httpStatus, T data) {
-        this.httpStatus = httpStatus;
+    public ResponseEnvelope(String code, T data) {
+        this.code = code;
         this.data = data;
-        this.message = httpStatus.getReasonPhrase();
+        this.message=null;
     }
 
-    public ResponseEnvelope(HttpStatus httpStatus, String message) {
-        this.httpStatus = httpStatus;
+    public ResponseEnvelope(String code) {
+        this.code = code;
+        this.data=null;
+        this.message=null;
+    }
+
+    public ResponseEnvelope(String code, String message) {
+        this.code = code;
         this.data=null;
         this.message = message;
     }
 
-    public ResponseEnvelope(HttpStatus httpStatus, T data, String message) {
-        this.httpStatus = httpStatus;
-        this.data = data;
-        this.message = message;
-    }
 }
