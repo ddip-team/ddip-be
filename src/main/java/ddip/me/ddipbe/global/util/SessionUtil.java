@@ -6,7 +6,7 @@ public class SessionUtil {
 
     public static final String MEMBER_ID = "memberId";
 
-    public static void setMemberId(HttpSession session, Long memberId) {
+    public static void setMemberId(HttpSession session, long memberId) {
         session.setAttribute(MEMBER_ID, memberId);
     }
 
