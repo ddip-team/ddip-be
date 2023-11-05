@@ -1,6 +1,7 @@
 package ddip.me.ddipbe.global.config.session;
 
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
+import ddip.me.ddipbe.global.util.SessionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.core.MethodParameter;

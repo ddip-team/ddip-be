@@ -1,4 +1,4 @@
-package ddip.me.ddipbe.global.config.session;
+package ddip.me.ddipbe.global.util;
 
 import jakarta.servlet.http.HttpSession;
 
