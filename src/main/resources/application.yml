@@ -1,3 +1,10 @@
+server:
+  servlet:
+    session:
+      cookie:
+        path: /
+        http-only: true
+      timeout: 1800
 spring:
   jpa:
     open-in-view: false
