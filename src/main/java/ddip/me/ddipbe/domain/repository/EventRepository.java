@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface EventRepository extends JpaRepository<Event,Long> {
+public interface EventRepository extends JpaRepository<Event, Long> {
 
     Optional<Event> findByUuid(UUID uuid);
 
-    Optional<List<Event>> findByMember(Member member);
+    List<Event> findByMember(Member member);
 }
