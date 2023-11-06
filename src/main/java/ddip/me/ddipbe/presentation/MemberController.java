@@ -38,7 +38,7 @@ public class MemberController {
     }
 
     @PostMapping("signin")
-    public ResponseEnvelope<MemberIdRes>  signin(@RequestBody SigninReq signinRequest, HttpServletRequest request) {
+    public ResponseEnvelope<MemberIdRes> signin(@RequestBody SigninReq signinRequest, HttpServletRequest request) {
         long memberId = memberService.signin(signinRequest.getEmail(), signinRequest.getPassword());
         SessionUtil.setMemberId(request.getSession(), memberId);
 
