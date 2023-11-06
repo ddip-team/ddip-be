@@ -3,12 +3,15 @@ package ddip.me.ddipbe.presentation;
 import ddip.me.ddipbe.application.EventService;
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
 import ddip.me.ddipbe.global.dto.ResponseEnvelope;
+import ddip.me.ddipbe.global.util.SessionUtil;
 import ddip.me.ddipbe.presentation.dto.request.EventCreateReqDTO;
 import ddip.me.ddipbe.presentation.dto.response.EventCommonResDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -29,5 +32,14 @@ public class EventAPI {
         return new ResponseEnvelope<>("success",findEvent,null);
     }
 
+    @GetMapping("/me")
+    public ResponseEnvelope<?> findOwnEvent(@SessionMemberId Long memberId){
+        List<EventCommonResDTO> ownEvents = eventService.findOwnEvent(memberId);
+        return new ResponseEnvelope<>("success",ownEvents,null);
+    }
 
+    @GetMapping("signin")
+    public void signin(HttpServletRequest request) {
+        SessionUtil.setMemberId(request.getSession(), 1L);
+    }
 }
