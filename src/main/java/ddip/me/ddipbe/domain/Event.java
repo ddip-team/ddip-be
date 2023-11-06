@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,20 +28,18 @@ public class Event {
 
     private String content;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss",timezone = "Asia/Seoul")
     private LocalDateTime start;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss",timezone = "Asia/Seoul")
     private LocalDateTime end;
 
-    @OneToMany(mappedBy = "event",orphanRemoval = true,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Permit> permits;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Event(UUID uuid, String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end,Member member) {
+    public Event(UUID uuid, String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end, Member member) {
         this.uuid = uuid;
         this.title = title;
         this.permitCount = permitCount;
