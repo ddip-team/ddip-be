@@ -1,5 +1,6 @@
 package ddip.me.ddipbe.application;
 
+import ddip.me.ddipbe.application.exception.NotFoundUuidException;
 import ddip.me.ddipbe.domain.Event;
 import ddip.me.ddipbe.domain.repository.EventRepository;
 import ddip.me.ddipbe.presentation.dto.request.EventCreateReqDTO;
@@ -32,5 +33,11 @@ public class EventService {
         );
 
         return new EventCommonResDTO(novelEvent);
+    }
+
+    public EventCommonResDTO findEventByUuid(UUID uuid){
+        Event findEvent = eventRepository.findByUuid(uuid)
+                .orElseThrow(() -> new NotFoundUuidException("DB에서 UUID를 찾을 수 없습니다."));
+        return new EventCommonResDTO(findEvent);
     }
 }

@@ -22,4 +22,12 @@ public class EventAPI {
         EventCommonResDTO novelEvent = eventService.createNovelEvent(eventCreateReqDTO, memberId);
         return new ResponseEnvelope<>("success",novelEvent,null);
     }
+
+    @GetMapping("/{uuid}")
+    public ResponseEnvelope<?> findEventByUuid(@PathVariable UUID uuid){
+        EventCommonResDTO findEvent = eventService.findEventByUuid(uuid);
+        return new ResponseEnvelope<>("success",findEvent,null);
+    }
+
+
 }
