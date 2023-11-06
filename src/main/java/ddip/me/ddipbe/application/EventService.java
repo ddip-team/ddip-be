@@ -26,22 +26,26 @@ public class EventService {
     private final MemberRepository memberRepository; // TODO - MemberServiceLayer에서 호출로 추후 리팩터링
 
     @Transactional
-    public Event createEvent(String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end, Long memberId) {
-        Member findMember = memberRepository.findById(memberId).orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
+    public UUID createEvent(String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end, Long memberId) {
+        Member findMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
+
         if (!eventEndTimeIsValidValue(start, end)) {
             throw new EventDateInvalidException();
         }
-        return eventRepository.save(
-                new Event(
-                        UUID.randomUUID(),
-                        title,
-                        permitCount,
-                        content,
-                        start,
-                        end,
-                        findMember
-                )
+
+        Event event = new Event(
+                UUID.randomUUID(),
+                title,
+                permitCount,
+                content,
+                start,
+                end,
+                findMember
         );
+        event = eventRepository.save(event);
+
+        return event.getUuid();
     }
 
     public Event findEventByUuid(UUID uuid) {
@@ -50,8 +54,10 @@ public class EventService {
     }
 
     public List<Event> findOwnEvent(Long memberId) {
-        Member findMember = memberRepository.findById(memberId).orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
-        List<Event> ownEvents = eventRepository.findByMember(findMember);
+        Member foundMember = memberRepository.findById(memberId).orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
+
+        List<Event> ownEvents = eventRepository.findByMember(foundMember);
+
         return ownEvents.stream()
                 .filter(event -> {
                     LocalDateTime now = LocalDateTime.now();
