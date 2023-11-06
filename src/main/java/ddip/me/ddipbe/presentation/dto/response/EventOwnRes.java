@@ -5,21 +5,23 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+import static java.time.LocalDateTime.now;
+
 @Getter
-public class EventRes {
+public class EventOwnRes {
     private String title;
     private Integer permitCount;
-    private String content;
+    private String contents;
     private LocalDateTime start;
     private LocalDateTime end;
-    private Long memberId;
+    private boolean isOpen;
 
-    public EventRes(Event event) {
+    public EventOwnRes(Event event) {
         this.title = event.getTitle();
         this.permitCount = event.getPermitCount();
-        this.content = event.getContent();
+        this.contents = event.getContent();
         this.start = event.getStart();
         this.end = event.getEnd();
-        this.memberId = event.getMember().getId();
+        this.isOpen = event.getStart().isBefore(now()) && event.getEnd().isAfter(now());
     }
 }

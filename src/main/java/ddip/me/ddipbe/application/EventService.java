@@ -53,17 +53,13 @@ public class EventService {
                 .orElseThrow(() -> new EventNotFoundException("DB에서 UUID를 찾을 수 없습니다."));
     }
 
-    public List<Event> findOwnEvent(Long memberId) {
+    public List<Event> findOwnEvent(Long memberId, boolean filterOpen) {
         Member foundMember = memberRepository.findById(memberId).orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
-
-        List<Event> ownEvents = eventRepository.findByMember(foundMember);
-
-        return ownEvents.stream()
-                .filter(event -> {
-                    LocalDateTime now = LocalDateTime.now();
-                    return event.getStart().isBefore(now) && event.getEnd().isAfter(now);
-                })
-                .toList();
+        if (filterOpen) {
+            LocalDateTime now = LocalDateTime.now();
+            return eventRepository.findAllByStartBeforeAndEndAfter(now, now);
+        }
+        return eventRepository.findAllByMember(foundMember);
     }
 
     private boolean eventEndTimeIsValidValue(LocalDateTime start, LocalDateTime end) {

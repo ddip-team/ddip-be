@@ -1,13 +1,15 @@
 package ddip.me.ddipbe.presentation.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.UUID;
 
-@Data
-@AllArgsConstructor
+@Getter
 public class EventUUIDRes {
 
     private UUID eventUuid;
+
+    public EventUUIDRes(UUID eventUuid) {
+        this.eventUuid = eventUuid;
+    }
 }
