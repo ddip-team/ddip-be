@@ -1,9 +1,9 @@
-package ddip.me.ddipbe.presentation.dto;
+package ddip.me.ddipbe.presentation.dto.request;
 
 import lombok.Data;
 
 @Data
-public class SigninRequest {
+public class SignupRequest {
 
     private String email;
     private String password;

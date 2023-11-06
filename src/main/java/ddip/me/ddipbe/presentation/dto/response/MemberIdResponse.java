@@ -1,4 +1,4 @@
-package ddip.me.ddipbe.presentation.dto;
+package ddip.me.ddipbe.presentation.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
