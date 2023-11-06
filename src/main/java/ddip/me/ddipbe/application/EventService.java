@@ -1,8 +1,8 @@
 package ddip.me.ddipbe.application;
 
+import ddip.me.ddipbe.application.exception.EventNotFoundIdException;
+import ddip.me.ddipbe.application.exception.EventNotFoundUuidException;
 import ddip.me.ddipbe.application.exception.InvalidEventDateException;
-import ddip.me.ddipbe.application.exception.NotFoundIdException;
-import ddip.me.ddipbe.application.exception.NotFoundUuidException;
 import ddip.me.ddipbe.domain.Event;
 import ddip.me.ddipbe.domain.Member;
 import ddip.me.ddipbe.domain.repository.EventRepository;
@@ -29,34 +29,34 @@ public class EventService {
     private final MemberRepository memberRepository; // TODO - MemberServiceLayer에서 호출로 추후 리팩터링
 
     @Transactional
-    public EventCommonResDTO createNovelEvent(EventCreateReqDTO eventCreateDTO,Long memberId) {
-        Member findMember = memberRepository.findById(memberId).orElseThrow(() -> new NotFoundIdException("ID가 존재하지 않습니다"));
-        if (!eventEndTimeIsValidValue(eventCreateDTO.getStart(),eventCreateDTO.getEnd())){
+    public EventCommonResDTO createNovelEvent(EventCreateReqDTO eventCreateDTO, Long memberId) {
+        Member findMember = memberRepository.findById(memberId).orElseThrow(() -> new EventNotFoundIdException("ID가 존재하지 않습니다"));
+        if (!eventEndTimeIsValidValue(eventCreateDTO.getStart(), eventCreateDTO.getEnd())) {
             throw new InvalidEventDateException();
         }
         Event novelEvent = eventRepository.save(
                 new Event(
-                            UUID.randomUUID(),
-                            eventCreateDTO.getTitle(),
-                            eventCreateDTO.getPermitCount(),
-                            eventCreateDTO.getContent(),
-                            eventCreateDTO.getStart(),
-                            eventCreateDTO.getEnd(),
-                            findMember
-                        )
-            );
+                        UUID.randomUUID(),
+                        eventCreateDTO.getTitle(),
+                        eventCreateDTO.getPermitCount(),
+                        eventCreateDTO.getContent(),
+                        eventCreateDTO.getStart(),
+                        eventCreateDTO.getEnd(),
+                        findMember
+                )
+        );
 
         return new EventCommonResDTO(novelEvent);
     }
 
-    public EventCommonResDTO findEventByUuid(UUID uuid){
+    public EventCommonResDTO findEventByUuid(UUID uuid) {
         Event findEvent = eventRepository.findByUuid(uuid)
-                .orElseThrow(() -> new NotFoundUuidException("DB에서 UUID를 찾을 수 없습니다."));
+                .orElseThrow(() -> new EventNotFoundUuidException("DB에서 UUID를 찾을 수 없습니다."));
         return new EventCommonResDTO(findEvent);
     }
 
-    public List<EventCommonResDTO> findOwnEvent(Long memberId){
-        Member findMember = memberRepository.findById(memberId).orElseThrow(() -> new NotFoundIdException("ID가 존재하지 않습니다"));
+    public List<EventCommonResDTO> findOwnEvent(Long memberId) {
+        Member findMember = memberRepository.findById(memberId).orElseThrow(() -> new EventNotFoundIdException("ID가 존재하지 않습니다"));
         List<Event> ownEvents = eventRepository.findByMember(findMember).get();
         return ownEvents.stream()
                 .filter(event -> {
@@ -66,7 +66,7 @@ public class EventService {
                 .map(EventCommonResDTO::new).toList();
     }
 
-    private boolean eventEndTimeIsValidValue(LocalDateTime start, LocalDateTime end){
+    private boolean eventEndTimeIsValidValue(LocalDateTime start, LocalDateTime end) {
         return end.isAfter(start) && end.isAfter(LocalDateTime.now());
     }
 }
