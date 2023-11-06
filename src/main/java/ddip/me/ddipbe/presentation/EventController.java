@@ -1,6 +1,7 @@
 package ddip.me.ddipbe.presentation;
 
 import ddip.me.ddipbe.application.EventService;
+import ddip.me.ddipbe.domain.Event;
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
 import ddip.me.ddipbe.global.dto.ResponseEnvelope;
 import ddip.me.ddipbe.presentation.dto.request.EventCreateReqDTO;
@@ -14,20 +15,20 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("events")
-public class EventAPI {
+public class EventController {
 
     private final EventService eventService;
 
     @PostMapping
-    public ResponseEnvelope<?> createNovelEvent(@RequestBody EventCreateReqDTO eventCreateReqDTO, @SessionMemberId Long memberId) {
-        EventCommonResDTO novelEvent = eventService.createNovelEvent(eventCreateReqDTO, memberId);
-        return new ResponseEnvelope<>(null, novelEvent, null);
+    public ResponseEnvelope<?> createEvent(@RequestBody EventCreateReqDTO eventCreateReqDTO, @SessionMemberId Long memberId) {
+        Event createEvent = eventService.createEvent(eventCreateReqDTO, memberId);
+        return new ResponseEnvelope<>(null, new EventCommonResDTO(createEvent), null);
     }
 
     @GetMapping("/{uuid}")
     public ResponseEnvelope<?> findEventByUuid(@PathVariable UUID uuid) {
-        EventCommonResDTO findEvent = eventService.findEventByUuid(uuid);
-        return new ResponseEnvelope<>(null, findEvent, null);
+        Event findEvent = eventService.findEventByUuid(uuid);
+        return new ResponseEnvelope<>(null, new EventCommonResDTO(findEvent), null);
     }
 
     @GetMapping("/me")
