@@ -37,9 +37,4 @@ public class EventAPI {
         List<EventCommonResDTO> ownEvents = eventService.findOwnEvent(memberId);
         return new ResponseEnvelope<>("success",ownEvents,null);
     }
-
-    @GetMapping("signin")
-    public void signin(HttpServletRequest request) {
-        SessionUtil.setMemberId(request.getSession(), 1L);
-    }
 }
