@@ -9,6 +9,12 @@ public class ResponseEnvelope<T> {
     private final T data;
     private String message;
 
+    public ResponseEnvelope(T data) {
+        this.code = null;
+        this.data = data;
+        this.message = null;
+    }
+
     public ResponseEnvelope(String code, T data) {
         this.code = code;
         this.data = data;

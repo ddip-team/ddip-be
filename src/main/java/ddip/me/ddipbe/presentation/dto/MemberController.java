@@ -3,10 +3,12 @@ package ddip.me.ddipbe.presentation.dto;
 import ddip.me.ddipbe.application.MemberService;
 import ddip.me.ddipbe.domain.Member;
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
+import ddip.me.ddipbe.global.dto.ResponseEnvelope;
 import ddip.me.ddipbe.global.util.SessionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("members")
@@ -16,29 +18,39 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("me")
-    public MemberMeResponse getMe(@SessionMemberId Long memberId) {
+    public ResponseEnvelope<MemberMeResponse> getMe(@SessionMemberId Long memberId) {
         Member member = memberService.findById(memberId);
-        return new MemberMeResponse(member.getId(), member.getEmail());
+
+        return new ResponseEnvelope<>(new MemberMeResponse(member.getId(), member.getEmail()));
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("signup")
-    public long signup(@RequestBody SignupRequest signupRequest) {
-        return memberService.signup(signupRequest.getEmail(), signupRequest.getPassword());
+    public ResponseEnvelope<MemberIdResponse> signup(@RequestBody SignupRequest signupRequest) {
+        long signedUpMemberId = memberService.signup(signupRequest.getEmail(), signupRequest.getPassword());
+
+        return new ResponseEnvelope<>(new MemberIdResponse(signedUpMemberId));
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("signin")
-    public long signin(@RequestBody SigninRequest signinRequest, HttpServletRequest request) {
+    public ResponseEnvelope<MemberIdResponse>  signin(@RequestBody SigninRequest signinRequest, HttpServletRequest request) {
         long memberId = memberService.signin(signinRequest.getEmail(), signinRequest.getPassword());
         SessionUtil.setMemberId(request.getSession(), memberId);
-        return memberId;
+
+        return new ResponseEnvelope<>(new MemberIdResponse(memberId));
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("signout")
-    public void signout(HttpServletRequest request) {
+    public ResponseEnvelope<?> signout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
+
+        return new ResponseEnvelope<>(null);
     }
 }
