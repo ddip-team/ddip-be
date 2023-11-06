@@ -1,8 +1,7 @@
 package ddip.me.ddipbe.application;
 
-import ddip.me.ddipbe.application.exception.EventNotFoundIdException;
-import ddip.me.ddipbe.application.exception.EventNotFoundUuidException;
-import ddip.me.ddipbe.application.exception.InvalidEventDateException;
+import ddip.me.ddipbe.application.exception.EventDateInvalidException;
+import ddip.me.ddipbe.application.exception.EventNotFoundException;
 import ddip.me.ddipbe.presentation.dto.request.EventCreateReqDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,9 +28,9 @@ public class EventServiceTest {
 
         //when
         assertThatThrownBy(() -> {
-                    eventService.createNovelEvent(initializingCreateDTO(), memberId);
+                    eventService.createEvent(initializingCreateDTO(), memberId);
                 }
-        ).isInstanceOf(EventNotFoundIdException.class);
+        ).isInstanceOf(EventNotFoundException.class);
     }
 
     @Test
@@ -44,7 +43,7 @@ public class EventServiceTest {
         assertThatThrownBy(() -> {
                     eventService.findEventByUuid(targetUuid);
                 }
-        ).isInstanceOf(EventNotFoundUuidException.class);
+        ).isInstanceOf(EventNotFoundException.class);
     }
 
     @Test
@@ -54,9 +53,9 @@ public class EventServiceTest {
 
         //when
         assertThatThrownBy(() -> {
-                    eventService.createNovelEvent(initializingPastDateCreateDTO(), memberId);
+                    eventService.createEvent(initializingPastDateCreateDTO(), memberId);
                 }
-        ).isInstanceOf(InvalidEventDateException.class);
+        ).isInstanceOf(EventDateInvalidException.class);
     }
 
     private EventCreateReqDTO initializingCreateDTO() {
