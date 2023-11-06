@@ -5,10 +5,10 @@ import ddip.me.ddipbe.domain.Member;
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
 import ddip.me.ddipbe.global.dto.ResponseEnvelope;
 import ddip.me.ddipbe.global.util.SessionUtil;
-import ddip.me.ddipbe.presentation.dto.request.SigninRequest;
-import ddip.me.ddipbe.presentation.dto.request.SignupRequest;
-import ddip.me.ddipbe.presentation.dto.response.MemberIdResponse;
-import ddip.me.ddipbe.presentation.dto.response.MemberMeResponse;
+import ddip.me.ddipbe.presentation.dto.request.SigninReq;
+import ddip.me.ddipbe.presentation.dto.request.SignupReq;
+import ddip.me.ddipbe.presentation.dto.response.MemberIdRes;
+import ddip.me.ddipbe.presentation.dto.response.MemberMeRes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -23,26 +23,26 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("me")
-    public ResponseEnvelope<MemberMeResponse> getMe(@SessionMemberId Long memberId) {
+    public ResponseEnvelope<MemberMeRes> getMe(@SessionMemberId Long memberId) {
         Member member = memberService.findById(memberId);
 
-        return new ResponseEnvelope<>(new MemberMeResponse(member.getId(), member.getEmail()));
+        return new ResponseEnvelope<>(new MemberMeRes(member.getId(), member.getEmail()));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("signup")
-    public ResponseEnvelope<MemberIdResponse> signup(@RequestBody SignupRequest signupRequest) {
+    public ResponseEnvelope<MemberIdRes> signup(@RequestBody SignupReq signupRequest) {
         long signedUpMemberId = memberService.signup(signupRequest.getEmail(), signupRequest.getPassword());
 
-        return new ResponseEnvelope<>(new MemberIdResponse(signedUpMemberId));
+        return new ResponseEnvelope<>(new MemberIdRes(signedUpMemberId));
     }
 
     @PostMapping("signin")
-    public ResponseEnvelope<MemberIdResponse>  signin(@RequestBody SigninRequest signinRequest, HttpServletRequest request) {
+    public ResponseEnvelope<MemberIdRes>  signin(@RequestBody SigninReq signinRequest, HttpServletRequest request) {
         long memberId = memberService.signin(signinRequest.getEmail(), signinRequest.getPassword());
         SessionUtil.setMemberId(request.getSession(), memberId);
 
-        return new ResponseEnvelope<>(new MemberIdResponse(memberId));
+        return new ResponseEnvelope<>(new MemberIdRes(memberId));
     }
 
     @PostMapping("signout")
