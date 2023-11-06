@@ -1,11 +1,13 @@
 package ddip.me.ddipbe.presentation.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
 public class EventCreateReqDTO {
     private String title;
     private Integer permitCount;
