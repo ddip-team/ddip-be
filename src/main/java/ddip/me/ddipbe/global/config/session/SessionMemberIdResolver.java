@@ -1,6 +1,7 @@
 package ddip.me.ddipbe.global.config.session;
 
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
+import ddip.me.ddipbe.global.exception.UnauthorizedException;
 import ddip.me.ddipbe.global.util.SessionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -26,12 +27,14 @@ public class SessionMemberIdResolver implements HandlerMethodArgumentResolver {
     public Long resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        SessionMemberId annotation = parameter.getParameterAnnotation(SessionMemberId.class);
         assert request != null;
+        assert annotation != null;
 
         HttpSession httpSession = request.getSession(false);
-        if (httpSession != null) {
-            return SessionUtil.getMemberId(httpSession);
+        if (annotation.required() && (httpSession == null || SessionUtil.getMemberId(httpSession) == null)) {
+            throw new UnauthorizedException();
         }
-        return null;
+        return SessionUtil.getMemberId(httpSession);
     }
 }

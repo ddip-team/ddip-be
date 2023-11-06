@@ -6,12 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Member {
 
     @Id
@@ -23,5 +23,10 @@ public class Member {
     private String password;
 
     @OneToMany(mappedBy = "member")
-    private List<Event> events;
+    private List<Event> events = new ArrayList<>();
+
+    public Member(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }
