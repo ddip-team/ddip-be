@@ -1,4 +1,4 @@
-package ddip.me.ddipbe.presentation.dto;
+package ddip.me.ddipbe.presentation;
 
 import ddip.me.ddipbe.application.MemberService;
 import ddip.me.ddipbe.domain.Member;
