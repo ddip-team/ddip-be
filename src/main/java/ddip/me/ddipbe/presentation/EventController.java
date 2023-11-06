@@ -21,7 +21,12 @@ public class EventController {
 
     @PostMapping
     public ResponseEnvelope<?> createEvent(@RequestBody EventCreateReqDTO eventCreateReqDTO, @SessionMemberId Long memberId) {
-        Event createEvent = eventService.createEvent(eventCreateReqDTO, memberId);
+        Event createEvent = eventService.createEvent(eventCreateReqDTO.getTitle(),
+                eventCreateReqDTO.getPermitCount(),
+                eventCreateReqDTO.getContent(),
+                eventCreateReqDTO.getStart(),
+                eventCreateReqDTO.getEnd(),
+                memberId);
         return new ResponseEnvelope<>(null, new EventCommonResDTO(createEvent), null);
     }
 
@@ -33,7 +38,7 @@ public class EventController {
 
     @GetMapping("/me")
     public ResponseEnvelope<?> findOwnEvent(@SessionMemberId Long memberId) {
-        List<EventCommonResDTO> ownEvents = eventService.findOwnEvent(memberId);
-        return new ResponseEnvelope<>(null, ownEvents, null);
+        List<Event> ownEvent = eventService.findOwnEvent(memberId);
+        return new ResponseEnvelope<>(null, ownEvent, null);
     }
 }
