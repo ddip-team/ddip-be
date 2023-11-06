@@ -1,7 +1,6 @@
 package ddip.me.ddipbe.application;
 
 import ddip.me.ddipbe.application.exception.NotFoundIdException;
-import ddip.me.ddipbe.application.exception.NotFoundMemberException;
 import ddip.me.ddipbe.application.exception.NotFoundUuidException;
 import ddip.me.ddipbe.domain.Event;
 import ddip.me.ddipbe.domain.Member;
@@ -54,7 +53,7 @@ public class EventService {
 
     public List<EventCommonResDTO> findOwnEvent(Long memberId){
         Member findMember = memberRepository.findById(memberId).orElseThrow(() -> new NotFoundIdException("ID가 존재하지 않습니다"));
-        List<Event> ownEvents = eventRepository.findByMember(findMember).orElseThrow(() -> new NotFoundMemberException("회원이 매핑되어 있지 않습니다."));
+        List<Event> ownEvents = eventRepository.findByMember(findMember).get();
         return ownEvents.stream()
                 .filter(event -> {
                     LocalDateTime now = LocalDateTime.now();
