@@ -22,7 +22,6 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("me")
     public ResponseEnvelope<MemberMeResponse> getMe(@SessionMemberId Long memberId) {
         Member member = memberService.findById(memberId);
@@ -38,7 +37,6 @@ public class MemberController {
         return new ResponseEnvelope<>(new MemberIdResponse(signedUpMemberId));
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @PostMapping("signin")
     public ResponseEnvelope<MemberIdResponse>  signin(@RequestBody SigninRequest signinRequest, HttpServletRequest request) {
         long memberId = memberService.signin(signinRequest.getEmail(), signinRequest.getPassword());
@@ -47,7 +45,6 @@ public class MemberController {
         return new ResponseEnvelope<>(new MemberIdResponse(memberId));
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @PostMapping("signout")
     public ResponseEnvelope<?> signout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
