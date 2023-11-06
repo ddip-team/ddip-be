@@ -1,5 +1,6 @@
 package ddip.me.ddipbe.application;
 
+import ddip.me.ddipbe.application.exception.InvalidEventDateException;
 import ddip.me.ddipbe.application.exception.NotFoundIdException;
 import ddip.me.ddipbe.application.exception.NotFoundUuidException;
 import ddip.me.ddipbe.domain.Event;
@@ -30,6 +31,9 @@ public class EventService {
     @Transactional
     public EventCommonResDTO createNovelEvent(EventCreateReqDTO eventCreateDTO,Long memberId) {
         Member findMember = memberRepository.findById(memberId).orElseThrow(() -> new NotFoundIdException("ID가 존재하지 않습니다"));
+        if (!eventEndTimeIsValidValue(eventCreateDTO.getStart(),eventCreateDTO.getEnd())){
+            throw new InvalidEventDateException();
+        }
         Event novelEvent = eventRepository.save(
                 new Event(
                             UUID.randomUUID(),
@@ -60,5 +64,9 @@ public class EventService {
                     return event.getStart().isBefore(now) && event.getEnd().isAfter(now);
                 })
                 .map(EventCommonResDTO::new).toList();
+    }
+
+    private boolean eventEndTimeIsValidValue(LocalDateTime start, LocalDateTime end){
+        return end.isAfter(start) && end.isAfter(LocalDateTime.now());
     }
 }
