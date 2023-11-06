@@ -41,4 +41,13 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public Event(UUID uuid, String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end) {
+        this.uuid = uuid;
+        this.title = title;
+        this.permitCount = permitCount;
+        this.content = content;
+        this.start = start;
+        this.end = end;
+    }
 }
