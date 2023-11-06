@@ -20,5 +20,6 @@ public class EventCommonResDTO {
         this.content = event.getContent();
         this.start = event.getStart();
         this.end = event.getEnd();
+        this.memberId = event.getMember().getId();
     }
 }

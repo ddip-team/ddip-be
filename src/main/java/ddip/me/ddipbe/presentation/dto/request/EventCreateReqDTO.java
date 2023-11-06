@@ -14,5 +14,4 @@ public class EventCreateReqDTO {
     private LocalDateTime start;
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime end;
-    private Long memberId;
 }

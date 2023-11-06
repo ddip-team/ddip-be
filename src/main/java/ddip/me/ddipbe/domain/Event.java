@@ -42,12 +42,13 @@ public class Event {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Event(UUID uuid, String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end) {
+    public Event(UUID uuid, String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end,Member member) {
         this.uuid = uuid;
         this.title = title;
         this.permitCount = permitCount;
         this.content = content;
         this.start = start;
         this.end = end;
+        this.member = member;
     }
 }

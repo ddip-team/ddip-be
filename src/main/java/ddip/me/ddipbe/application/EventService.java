@@ -1,8 +1,11 @@
 package ddip.me.ddipbe.application;
 
+import ddip.me.ddipbe.application.exception.NotFoundIdException;
 import ddip.me.ddipbe.application.exception.NotFoundUuidException;
 import ddip.me.ddipbe.domain.Event;
+import ddip.me.ddipbe.domain.Member;
 import ddip.me.ddipbe.domain.repository.EventRepository;
+import ddip.me.ddipbe.domain.repository.MemberRepository;
 import ddip.me.ddipbe.presentation.dto.request.EventCreateReqDTO;
 import ddip.me.ddipbe.presentation.dto.response.EventCommonResDTO;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +23,22 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
+    private final MemberRepository memberRepository; // TODO - MemberServiceLayer에서 호출로 추후 리팩터링
+
     @Transactional
     public EventCommonResDTO createNovelEvent(EventCreateReqDTO eventCreateDTO,Long memberId) {
-        //TODO memberID find
+        Member findMember = memberRepository.findById(memberId).orElseThrow(() -> new NotFoundIdException("ID가 존재하지 않습니다"));
         Event novelEvent = eventRepository.save(
-                new Event(UUID.randomUUID(),
-                        eventCreateDTO.getTitle(),
-                        eventCreateDTO.getPermitCount(),
-                        eventCreateDTO.getContent(),
-                        eventCreateDTO.getStart(),
-                        eventCreateDTO.getEnd())
-        );
+                new Event(
+                            UUID.randomUUID(),
+                            eventCreateDTO.getTitle(),
+                            eventCreateDTO.getPermitCount(),
+                            eventCreateDTO.getContent(),
+                            eventCreateDTO.getStart(),
+                            eventCreateDTO.getEnd(),
+                            findMember
+                        )
+            );
 
         return new EventCommonResDTO(novelEvent);
     }
