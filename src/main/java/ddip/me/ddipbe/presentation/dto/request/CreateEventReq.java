@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-public class EventCreateReqDTO {
+public class CreateEventReq {
     private String title;
     private Integer permitCount;
     private String content;

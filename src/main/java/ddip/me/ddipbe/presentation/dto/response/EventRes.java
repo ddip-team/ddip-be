@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class EventCommonResDTO {
+public class EventRes {
     private String title;
     private Integer permitCount;
     private String content;
@@ -14,7 +14,7 @@ public class EventCommonResDTO {
     private LocalDateTime end;
     private Long memberId;
 
-    public EventCommonResDTO(Event event) {
+    public EventRes(Event event) {
         this.title = event.getTitle();
         this.permitCount = event.getPermitCount();
         this.content = event.getContent();

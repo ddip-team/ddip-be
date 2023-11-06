@@ -2,7 +2,7 @@ package ddip.me.ddipbe.application;
 
 import ddip.me.ddipbe.application.exception.EventDateInvalidException;
 import ddip.me.ddipbe.application.exception.EventNotFoundException;
-import ddip.me.ddipbe.presentation.dto.request.EventCreateReqDTO;
+import ddip.me.ddipbe.presentation.dto.request.CreateEventReq;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,11 +58,11 @@ public class EventServiceTest {
         ).isInstanceOf(EventDateInvalidException.class);
     }
 
-    private EventCreateReqDTO initializingCreateDTO() {
-        return new EventCreateReqDTO("test", 1, "test", now().minusDays(1), now().plusDays(1));
+    private CreateEventReq initializingCreateDTO() {
+        return new CreateEventReq("test", 1, "test", now().minusDays(1), now().plusDays(1));
     }
 
-    private EventCreateReqDTO initializingPastDateCreateDTO() {
-        return new EventCreateReqDTO("test", 1, "test", now().minusDays(2), now().minusDays(1));
+    private CreateEventReq initializingPastDateCreateDTO() {
+        return new CreateEventReq("test", 1, "test", now().minusDays(2), now().minusDays(1));
     }
 }
