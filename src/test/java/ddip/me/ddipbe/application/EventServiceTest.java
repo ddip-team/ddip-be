@@ -1,8 +1,10 @@
 package ddip.me.ddipbe.application;
 
+import ddip.me.ddipbe.application.exception.InvalidEventDateException;
 import ddip.me.ddipbe.application.exception.NotFoundIdException;
 import ddip.me.ddipbe.application.exception.NotFoundUuidException;
 import ddip.me.ddipbe.presentation.dto.request.EventCreateReqDTO;
+import ddip.me.ddipbe.presentation.dto.response.EventCommonResDTO;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static java.time.LocalDateTime.*;
@@ -48,8 +51,23 @@ public class EventServiceTest {
                 ).isInstanceOf(NotFoundUuidException.class);
     }
 
+    @Test
+    void eventCreateByFormattingValueExcepted_InvalidDateTime(){
+        //given
+        Long memberId = 1L;
+
+        //when
+        assertThatThrownBy(()->{
+                eventService.createNovelEvent(initializingPastDateCreateDTO(),memberId);
+            }
+                ).isInstanceOf(InvalidEventDateException.class);
+    }
 
     private EventCreateReqDTO initializingCreateDTO(){
         return new EventCreateReqDTO("test",1,"test", now().minusDays(1), now().plusDays(1));
+    }
+
+    private EventCreateReqDTO initializingPastDateCreateDTO(){
+        return new EventCreateReqDTO("test",1,"test", now().minusDays(2), now().minusDays(1));
     }
 }
