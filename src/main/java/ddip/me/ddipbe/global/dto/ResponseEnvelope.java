@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 public class ResponseEnvelope<T> {
     private final String code;
     private final T data;
-    private String message;
+    private final String message;
 
     public ResponseEnvelope(T data) {
         this.code = null;
@@ -18,12 +18,6 @@ public class ResponseEnvelope<T> {
     public ResponseEnvelope(String code, T data) {
         this.code = code;
         this.data = data;
-        this.message = null;
-    }
-
-    public ResponseEnvelope(String code) {
-        this.code = code;
-        this.data = null;
         this.message = null;
     }
 

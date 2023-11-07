@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,14 +27,16 @@ public class Event {
 
     private Integer permitCount;
 
+    private Integer remainCount;
+
     private String content;
 
     private LocalDateTime start;
 
     private LocalDateTime end;
 
-    @OneToMany(mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Permit> permits;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
+    private List<Permit> permits = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -43,9 +46,26 @@ public class Event {
         this.uuid = uuid;
         this.title = title;
         this.permitCount = permitCount;
+        this.remainCount = permitCount;
         this.content = content;
         this.start = start;
         this.end = end;
         this.member = member;
+    }
+
+    public boolean isOpen(LocalDateTime now) {
+        return start.isBefore(now) && end.isAfter(now);
+    }
+
+    public boolean decreaseRemainCount() {
+        if (remainCount == 0) {
+            return false;
+        }
+        remainCount--;
+        return true;
+    }
+
+    public void addPermit(Permit permit) {
+        permits.add(permit);
     }
 }

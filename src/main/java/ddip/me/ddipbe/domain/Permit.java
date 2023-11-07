@@ -18,7 +18,12 @@ public class Permit {
 
     private String token;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id")
     private Event event;
+
+    public Permit(String token, Event event) {
+        this.token = token;
+        this.event = event;
+    }
 }
