@@ -33,4 +33,9 @@ public class ResponseEnvelope<T> {
         this.message = message;
     }
 
+    public ResponseEnvelope(String code, T data, String message) {
+        this.code = code;
+        this.data = data;
+        this.message = message;
+    }
 }

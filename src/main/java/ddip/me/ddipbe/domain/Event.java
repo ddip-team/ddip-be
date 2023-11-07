@@ -32,10 +32,20 @@ public class Event {
 
     private LocalDateTime end;
 
-    @OneToMany(mappedBy = "event")
+    @OneToMany(mappedBy = "event", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Permit> permits;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public Event(UUID uuid, String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end, Member member) {
+        this.uuid = uuid;
+        this.title = title;
+        this.permitCount = permitCount;
+        this.content = content;
+        this.start = start;
+        this.end = end;
+        this.member = member;
+    }
 }
