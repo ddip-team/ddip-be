@@ -74,20 +74,20 @@ public class EventService {
                 .orElseThrow(() -> new EventNotFoundException("DB에서 UUID를 찾을 수 없습니다."));
 
         LocalDateTime now = LocalDateTime.now();
-        if (event.getStart().isAfter(now) || event.getEnd().isBefore(now)) {
+        if (!event.isOpen(now)) {
             throw new EventNotOpenException();
-        }
-
-        if (event.getPermits().size() >= event.getPermitCount()) {
-            throw new EventCapacityFullException();
         }
 
         if (permitRepository.existsByEventUuidAndToken(uuid, token)) {
             throw new EventAlreadyAppliedException();
         }
 
-        Permit permit = new Permit(token, event);
-        permitRepository.save(permit);
+        boolean success = event.decreaseRemainCount();
+        if (!success) {
+            throw new EventCapacityFullException();
+        }
+
+        event.addPermit(new Permit(token, event));
     }
 
     public Event findSuccessEvent(UUID uuid, String token) {
