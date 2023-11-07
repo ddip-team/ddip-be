@@ -1,10 +1,15 @@
 package ddip.me.ddipbe.presentation.dto.request;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class SigninReq {
 
-    private String email;
-    private String password;
+    private final String email;
+    private final String password;
+
+    public SigninReq(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

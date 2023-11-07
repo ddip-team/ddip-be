@@ -4,20 +4,23 @@ import ddip.me.ddipbe.domain.Event;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static java.time.LocalDateTime.now;
 
 @Getter
 public class EventOwnRes {
-    private String title;
-    private Integer permitCount;
-    private String contents;
-    private LocalDateTime start;
-    private LocalDateTime end;
-    private boolean isOpen;
+    private final String title;
+    private final UUID uuid;
+    private final Integer permitCount;
+    private final String contents;
+    private final LocalDateTime end;
+    private final LocalDateTime start;
+    private final boolean isOpen;
 
     public EventOwnRes(Event event) {
         this.title = event.getTitle();
+        this.uuid = event.getUuid();
         this.permitCount = event.getPermitCount();
         this.contents = event.getContent();
         this.start = event.getStart();
