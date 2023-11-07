@@ -16,10 +16,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Service
-@Transactional(readOnly = true)
-@RequiredArgsConstructor
 @Log4j2
+@Transactional(readOnly = true)
+@Service
+@RequiredArgsConstructor
 public class EventService {
 
     private final EventRepository eventRepository;
@@ -28,7 +28,7 @@ public class EventService {
     private final MemberRepository memberRepository; // TODO - MemberServiceLayer에서 호출로 추후 리팩터링
 
     @Transactional
-    public UUID createEvent(String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end, Long memberId) {
+    public Event createEvent(String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end, Long memberId) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
 
@@ -47,7 +47,7 @@ public class EventService {
         );
         event = eventRepository.save(event);
 
-        return event.getUuid();
+        return event;
     }
 
     public Event findEventByUuid(UUID uuid) {

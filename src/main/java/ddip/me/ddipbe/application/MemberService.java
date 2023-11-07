@@ -8,7 +8,9 @@ import ddip.me.ddipbe.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -20,7 +22,8 @@ public class MemberService {
         return memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
     }
 
-    public long signup(String email, String password) {
+    @Transactional
+    public Member signup(String email, String password) {
         if (memberRepository.existsByEmail(email)) {
             throw new AlreadySignedUpException();
         }
@@ -28,7 +31,7 @@ public class MemberService {
         Member member = new Member(email, passwordEncoder.encode(password));
         member = memberRepository.save(member);
 
-        return member.getId();
+        return member;
     }
 
     public long signin(String email, String password) {

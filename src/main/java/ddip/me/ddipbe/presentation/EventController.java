@@ -26,14 +26,14 @@ public class EventController {
 
     @PostMapping
     public ResponseEnvelope<EventUUIDRes> createEvent(@RequestBody CreateEventReq createEventReq, @SessionMemberId Long memberId) {
-        UUID eventUuid = eventService.createEvent(
+        Event event = eventService.createEvent(
                 createEventReq.getTitle(),
                 createEventReq.getPermitCount(),
                 createEventReq.getContent(),
                 createEventReq.getStart(),
                 createEventReq.getEnd(),
                 memberId);
-        return new ResponseEnvelope<>(new EventUUIDRes(eventUuid));
+        return new ResponseEnvelope<>(new EventUUIDRes(event.getUuid()));
     }
 
     @GetMapping("/{uuid}")
