@@ -1,11 +1,12 @@
 package ddip.me.ddipbe.application;
 
-import ddip.me.ddipbe.application.exception.EventDateInvalidException;
-import ddip.me.ddipbe.application.exception.EventNotFoundException;
+import ddip.me.ddipbe.application.exception.*;
 import ddip.me.ddipbe.domain.Event;
 import ddip.me.ddipbe.domain.Member;
+import ddip.me.ddipbe.domain.Permit;
 import ddip.me.ddipbe.domain.repository.EventRepository;
 import ddip.me.ddipbe.domain.repository.MemberRepository;
+import ddip.me.ddipbe.domain.repository.PermitRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final PermitRepository permitRepository;
 
     private final MemberRepository memberRepository; // TODO - MemberServiceLayer에서 호출로 추후 리팩터링
 
@@ -64,5 +66,32 @@ public class EventService {
 
     private boolean eventEndTimeIsValidValue(LocalDateTime start, LocalDateTime end) {
         return end.isAfter(start) && end.isAfter(LocalDateTime.now());
+    }
+
+    @Transactional
+    public void applyEvent(UUID uuid, String token) {
+        Event event = eventRepository.findByUuidForUpdate(uuid)
+                .orElseThrow(() -> new EventNotFoundException("DB에서 UUID를 찾을 수 없습니다."));
+
+        LocalDateTime now = LocalDateTime.now();
+        if (event.getStart().isAfter(now) || event.getEnd().isBefore(now)) {
+            throw new EventNotOpenException();
+        }
+
+        if (event.getPermits().size() >= event.getPermitCount()) {
+            throw new EventCapacityFullException();
+        }
+
+        if (permitRepository.existsByEventUuidAndToken(uuid, token)) {
+            throw new EventAlreadyAppliedException();
+        }
+
+        Permit permit = new Permit(token, event);
+        permitRepository.save(permit);
+    }
+
+    public Event findSuccessEvent(UUID uuid, String token) {
+        Permit permit = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
+        return permit.getEvent();
     }
 }

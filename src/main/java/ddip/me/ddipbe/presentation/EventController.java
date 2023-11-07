@@ -7,6 +7,7 @@ import ddip.me.ddipbe.global.dto.ResponseEnvelope;
 import ddip.me.ddipbe.presentation.dto.request.CreateEventReq;
 import ddip.me.ddipbe.presentation.dto.response.EventDetailRes;
 import ddip.me.ddipbe.presentation.dto.response.EventOwnRes;
+import ddip.me.ddipbe.presentation.dto.response.EventRes;
 import ddip.me.ddipbe.presentation.dto.response.EventUUIDRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -50,5 +51,17 @@ public class EventController {
         List<Event> ownEvents = eventService.findOwnEvent(memberId, checkOpen);
         List<EventOwnRes> ownEvnetList = ownEvents.stream().map(EventOwnRes::new).toList();
         return new ResponseEnvelope<>(ownEvnetList);
+    }
+
+    @PostMapping("/{uuid}/apply")
+    public ResponseEnvelope<?> applyEvent(@PathVariable UUID uuid, @RequestParam String token) {
+        eventService.applyEvent(uuid, token);
+        return new ResponseEnvelope<>(null);
+    }
+
+    @GetMapping("/{uuid}/success")
+    public ResponseEnvelope<EventRes> findSuccessEvent(@PathVariable UUID uuid, @RequestParam String token) {
+        Event event = eventService.findSuccessEvent(uuid, token);
+        return new ResponseEnvelope<>(new EventRes(event));
     }
 }
