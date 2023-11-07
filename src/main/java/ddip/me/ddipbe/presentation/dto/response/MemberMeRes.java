@@ -1,12 +1,15 @@
 package ddip.me.ddipbe.presentation.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-@AllArgsConstructor
+@Getter
 public class MemberMeRes {
 
-    private long id;
-    private String email;
+    private final long id;
+    private final String email;
+
+    public MemberMeRes(long id, String email) {
+        this.id = id;
+        this.email = email;
+    }
 }

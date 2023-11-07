@@ -7,9 +7,9 @@ import java.util.UUID;
 @Getter
 public class EventUUIDRes {
 
-    private UUID eventUuid;
+    private final UUID eventUuid;
 
-    public EventUUIDRes(UUID eventUuid) {
-        this.eventUuid = eventUuid;
+    public EventUUIDRes(UUID uuid) {
+        this.eventUuid = uuid;
     }
 }

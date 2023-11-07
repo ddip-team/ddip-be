@@ -1,11 +1,13 @@
 package ddip.me.ddipbe.presentation.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-@AllArgsConstructor
+@Getter
 public class MemberIdRes {
 
-    private long memberId;
+    private final long memberId;
+
+    public MemberIdRes(long memberId) {
+        this.memberId = memberId;
+    }
 }
