@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,9 +31,9 @@ public class Event {
 
     private String successContent;
 
-    private LocalDateTime startDateTime;
+    private ZonedDateTime startDateTime;
 
-    private LocalDateTime endDateTime;
+    private ZonedDateTime endDateTime;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
     private List<SuccessRecord> successRecords = new ArrayList<>();
@@ -42,7 +42,7 @@ public class Event {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Event(UUID uuid, String title, Integer limitCount, String successContent, LocalDateTime startDateTime, LocalDateTime endDateTime, Member member) {
+    public Event(UUID uuid, String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime, Member member) {
         this.uuid = uuid;
         this.title = title;
         this.limitCount = limitCount;
@@ -53,7 +53,7 @@ public class Event {
         this.member = member;
     }
 
-    public boolean isOpen(LocalDateTime now) {
+    public boolean isOpen(ZonedDateTime now) {
         return startDateTime.isBefore(now) && endDateTime.isAfter(now);
     }
 

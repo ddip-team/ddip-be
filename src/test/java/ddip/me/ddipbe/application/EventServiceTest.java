@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,7 +26,7 @@ public class EventServiceTest {
     void eventCreateByFormattingValueExcepted_InvalidMemberId() {
         // given
         long memberId = 9999L;
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
 
         // when, then
         assertThatThrownBy(() -> eventService.createEvent(
@@ -57,7 +57,7 @@ public class EventServiceTest {
     void eventCreateByFormattingValueExcepted_InvalidDateTime() {
         // given
         Long memberId = 1L;
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
 
         // when, then
         assertThatThrownBy(() -> eventService.createEvent(

@@ -4,7 +4,7 @@ package ddip.me.ddipbe.presentation.dto.response;
 import ddip.me.ddipbe.domain.Event;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Getter
@@ -12,8 +12,8 @@ public class EventDetailRes {
     private final String title;
     private final UUID uuid;
     private final Integer limitCount;
-    private final LocalDateTime startDateTime;
-    private final LocalDateTime endDateTime;
+    private final ZonedDateTime startDateTime;
+    private final ZonedDateTime endDateTime;
     private final Long memberId;
 
     public EventDetailRes(Event event) {
