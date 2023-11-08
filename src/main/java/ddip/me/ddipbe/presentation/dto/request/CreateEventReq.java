@@ -8,16 +8,16 @@ import java.time.LocalDateTime;
 public class CreateEventReq {
 
     private final String title;
-    private final Integer permitCount;
-    private final String content;
-    private final LocalDateTime start;
-    private final LocalDateTime end;
+    private final Integer limitCount;
+    private final String successContent;
+    private final LocalDateTime startDateTime;
+    private final LocalDateTime endDateTime;
 
-    public CreateEventReq(String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end) {
+    public CreateEventReq(String title, Integer limitCount, String successContent, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.title = title;
-        this.permitCount = permitCount;
-        this.content = content;
-        this.start = start;
-        this.end = end;
+        this.limitCount = limitCount;
+        this.successContent = successContent;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
     }
 }

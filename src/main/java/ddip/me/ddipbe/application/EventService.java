@@ -3,7 +3,7 @@ package ddip.me.ddipbe.application;
 import ddip.me.ddipbe.application.exception.*;
 import ddip.me.ddipbe.domain.Event;
 import ddip.me.ddipbe.domain.Member;
-import ddip.me.ddipbe.domain.Permit;
+import ddip.me.ddipbe.domain.SuccessRecord;
 import ddip.me.ddipbe.domain.repository.EventRepository;
 import ddip.me.ddipbe.domain.repository.MemberRepository;
 import ddip.me.ddipbe.domain.repository.PermitRepository;
@@ -59,7 +59,7 @@ public class EventService {
         Member foundMember = memberRepository.findById(memberId).orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
         if (filterOpen) {
             LocalDateTime now = LocalDateTime.now();
-            return eventRepository.findAllByStartBeforeAndEndAfter(now, now);
+            return eventRepository.findAllByStartDateTimeBeforeAndEndDateTimeAfter(now, now);
         }
         return eventRepository.findAllByMember(foundMember);
     }
@@ -87,11 +87,11 @@ public class EventService {
             throw new EventCapacityFullException();
         }
 
-        event.addPermit(new Permit(token, event));
+        event.addPermit(new SuccessRecord(token, event));
     }
 
     public Event findSuccessEvent(UUID uuid, String token) {
-        Permit permit = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
-        return permit.getEvent();
+        SuccessRecord successRecord = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
+        return successRecord.getEvent();
     }
 }

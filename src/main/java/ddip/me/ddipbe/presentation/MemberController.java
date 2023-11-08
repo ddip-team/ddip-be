@@ -32,9 +32,9 @@ public class MemberController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("signup")
     public ResponseEnvelope<MemberIdRes> signup(@RequestBody SignupReq signupRequest) {
-        long signedUpMemberId = memberService.signup(signupRequest.getEmail(), signupRequest.getPassword());
+        Member member = memberService.signup(signupRequest.getEmail(), signupRequest.getPassword());
 
-        return new ResponseEnvelope<>(new MemberIdRes(signedUpMemberId));
+        return new ResponseEnvelope<>(new MemberIdRes(member.getId()));
     }
 
     @PostMapping("signin")

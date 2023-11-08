@@ -25,36 +25,36 @@ public class Event {
 
     private String title;
 
-    private Integer permitCount;
+    private Integer limitCount;
 
     private Integer remainCount;
 
-    private String content;
+    private String successContent;
 
-    private LocalDateTime start;
+    private LocalDateTime startDateTime;
 
-    private LocalDateTime end;
+    private LocalDateTime endDateTime;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
-    private List<Permit> permits = new ArrayList<>();
+    private List<SuccessRecord> successRecords = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Event(UUID uuid, String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end, Member member) {
+    public Event(UUID uuid, String title, Integer limitCount, String successContent, LocalDateTime startDateTime, LocalDateTime endDateTime, Member member) {
         this.uuid = uuid;
         this.title = title;
-        this.permitCount = permitCount;
-        this.remainCount = permitCount;
-        this.content = content;
-        this.start = start;
-        this.end = end;
+        this.limitCount = limitCount;
+        this.remainCount = limitCount;
+        this.successContent = successContent;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
         this.member = member;
     }
 
     public boolean isOpen(LocalDateTime now) {
-        return start.isBefore(now) && end.isAfter(now);
+        return startDateTime.isBefore(now) && endDateTime.isAfter(now);
     }
 
     public boolean decreaseRemainCount() {
@@ -65,7 +65,7 @@ public class Event {
         return true;
     }
 
-    public void addPermit(Permit permit) {
-        permits.add(permit);
+    public void addPermit(SuccessRecord successRecord) {
+        successRecords.add(successRecord);
     }
 }

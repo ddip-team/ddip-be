@@ -11,17 +11,17 @@ import java.util.UUID;
 public class EventDetailRes {
     private final String title;
     private final UUID uuid;
-    private final Integer permitCount;
-    private final LocalDateTime start;
-    private final LocalDateTime end;
+    private final Integer limitCount;
+    private final LocalDateTime startDateTime;
+    private final LocalDateTime endDateTime;
     private final Long memberId;
 
     public EventDetailRes(Event event) {
         this.title = event.getTitle();
         this.uuid = event.getUuid();
-        this.permitCount = event.getPermitCount();
-        this.start = event.getStart();
-        this.end = event.getEnd();
+        this.limitCount = event.getLimitCount();
+        this.startDateTime = event.getStartDateTime();
+        this.endDateTime = event.getEndDateTime();
         this.memberId = event.getMember().getId();
     }
 }

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Permit {
+public class SuccessRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class Permit {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    public Permit(String token, Event event) {
+    public SuccessRecord(String token, Event event) {
         this.token = token;
         this.event = event;
     }
