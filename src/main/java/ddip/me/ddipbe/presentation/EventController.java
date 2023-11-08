@@ -28,10 +28,10 @@ public class EventController {
     public ResponseEnvelope<EventUUIDRes> createEvent(@RequestBody CreateEventReq createEventReq, @SessionMemberId Long memberId) {
         Event event = eventService.createEvent(
                 createEventReq.getTitle(),
-                createEventReq.getPermitCount(),
-                createEventReq.getContent(),
-                createEventReq.getStart(),
-                createEventReq.getEnd(),
+                createEventReq.getLimitCount(),
+                createEventReq.getSuccessContent(),
+                createEventReq.getStartDateTime(),
+                createEventReq.getEndDateTime(),
                 memberId);
         return new ResponseEnvelope<>(new EventUUIDRes(event.getUuid()));
     }
@@ -44,10 +44,7 @@ public class EventController {
 
     @GetMapping("/me")
     public ResponseEnvelope<?> findOwnEvent(@SessionMemberId Long memberId, @RequestParam(required = false) String open) {
-        boolean checkOpen = false;
-        if (open != null) {
-            checkOpen = true;
-        }
+        boolean checkOpen = open != null;
         List<Event> ownEvents = eventService.findOwnEvent(memberId, checkOpen);
         List<EventOwnRes> ownEvnetList = ownEvents.stream().map(EventOwnRes::new).toList();
         return new ResponseEnvelope<>(ownEvnetList);

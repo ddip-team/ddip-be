@@ -3,7 +3,7 @@ package ddip.me.ddipbe.application;
 import ddip.me.ddipbe.application.exception.*;
 import ddip.me.ddipbe.domain.Event;
 import ddip.me.ddipbe.domain.Member;
-import ddip.me.ddipbe.domain.Permit;
+import ddip.me.ddipbe.domain.SuccessRecord;
 import ddip.me.ddipbe.domain.repository.EventRepository;
 import ddip.me.ddipbe.domain.repository.MemberRepository;
 import ddip.me.ddipbe.domain.repository.PermitRepository;
@@ -12,7 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,7 +28,7 @@ public class EventService {
     private final MemberRepository memberRepository; // TODO - MemberServiceLayer에서 호출로 추후 리팩터링
 
     @Transactional
-    public Event createEvent(String title, Integer permitCount, String content, LocalDateTime start, LocalDateTime end, Long memberId) {
+    public Event createEvent(String title, Integer permitCount, String content, ZonedDateTime start, ZonedDateTime end, Long memberId) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
 
@@ -58,14 +58,14 @@ public class EventService {
     public List<Event> findOwnEvent(Long memberId, boolean filterOpen) {
         Member foundMember = memberRepository.findById(memberId).orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
         if (filterOpen) {
-            LocalDateTime now = LocalDateTime.now();
-            return eventRepository.findAllByStartBeforeAndEndAfter(now, now);
+            ZonedDateTime now = ZonedDateTime.now();
+            return eventRepository.findAllByStartDateTimeBeforeAndEndDateTimeAfter(now, now);
         }
         return eventRepository.findAllByMember(foundMember);
     }
 
-    private boolean eventEndTimeIsValidValue(LocalDateTime start, LocalDateTime end) {
-        return end.isAfter(start) && end.isAfter(LocalDateTime.now());
+    private boolean eventEndTimeIsValidValue(ZonedDateTime start, ZonedDateTime end) {
+        return end.isAfter(start) && end.isAfter(ZonedDateTime.now());
     }
 
     @Transactional
@@ -73,7 +73,7 @@ public class EventService {
         Event event = eventRepository.findByUuidForUpdate(uuid)
                 .orElseThrow(() -> new EventNotFoundException("DB에서 UUID를 찾을 수 없습니다."));
 
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
         if (!event.isOpen(now)) {
             throw new EventNotOpenException();
         }
@@ -87,11 +87,11 @@ public class EventService {
             throw new EventCapacityFullException();
         }
 
-        event.addPermit(new Permit(token, event));
+        event.addPermit(new SuccessRecord(token, event));
     }
 
     public Event findSuccessEvent(UUID uuid, String token) {
-        Permit permit = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
-        return permit.getEvent();
+        SuccessRecord successRecord = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
+        return successRecord.getEvent();
     }
 }
