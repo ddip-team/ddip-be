@@ -29,8 +29,7 @@ BEGIN
                         SET END_DATE := NOW() + INTERVAL 2 DAY;
                     END IF;
                     INSERT INTO Event(uuid, title, limit_count, remain_count, success_content, start_date_time,
-                                      end_date_time,
-                                      member_id)
+                                      end_date_time, member_id)
                     VALUES (UUID, CONCAT('Event ', (M - 1) * 5 + I), 10, IF(I = 1, 10, IF(I <= 4, 0, 10)), 'Success',
                             START_DATE, END_DATE, M);
                     SET EVENT_ID := LAST_INSERT_ID();
