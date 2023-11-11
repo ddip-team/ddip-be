@@ -1,10 +1,13 @@
 package ddip.me.ddipbe.domain;
 
+import ddip.me.ddipbe.global.util.MapConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.Map;
 
 @Entity
 @Getter
@@ -21,6 +24,10 @@ public class SuccessRecord {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id")
     private Event event;
+
+    @Column(columnDefinition = "json")
+    @Convert(converter = MapConverter.class)
+    private Map<String, Object> successFormat;
 
     public SuccessRecord(String token, Event event) {
         this.token = token;
