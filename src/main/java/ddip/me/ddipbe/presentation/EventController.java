@@ -26,7 +26,7 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping
-    public ResponseEnvelope<EventUUIDRes> createEvent(@RequestBody CreateEventReq createEventReq, @SessionMemberId Long memberId, Map<String,String> sucessFormat) {
+    public ResponseEnvelope<EventUUIDRes> createEvent(@RequestBody CreateEventReq createEventReq, @SessionMemberId Long memberId) {
         Event event = eventService.createEvent(
                 createEventReq.getTitle(),
                 createEventReq.getLimitCount(),
@@ -34,7 +34,7 @@ public class EventController {
                 createEventReq.getStartDateTime(),
                 createEventReq.getEndDateTime(),
                 memberId,
-                sucessFormat);
+                createEventReq.getSuccessFormat());
         return new ResponseEnvelope<>(new EventUUIDRes(event.getUuid()));
     }
 
