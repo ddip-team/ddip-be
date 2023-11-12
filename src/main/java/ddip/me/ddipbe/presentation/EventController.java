@@ -14,6 +14,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -25,14 +26,15 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping
-    public ResponseEnvelope<EventUUIDRes> createEvent(@RequestBody CreateEventReq createEventReq, @SessionMemberId Long memberId) {
+    public ResponseEnvelope<EventUUIDRes> createEvent(@RequestBody CreateEventReq createEventReq, @SessionMemberId Long memberId, Map<String,String> sucessFormat) {
         Event event = eventService.createEvent(
                 createEventReq.getTitle(),
                 createEventReq.getLimitCount(),
                 createEventReq.getSuccessContent(),
                 createEventReq.getStartDateTime(),
                 createEventReq.getEndDateTime(),
-                memberId);
+                memberId,
+                sucessFormat);
         return new ResponseEnvelope<>(new EventUUIDRes(event.getUuid()));
     }
 
