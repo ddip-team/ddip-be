@@ -1,6 +1,6 @@
 package ddip.me.ddipbe.domain;
 
-import ddip.me.ddipbe.global.util.MapConverter;
+import ddip.me.ddipbe.global.util.JsonConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,8 +26,8 @@ public class SuccessRecord {
     private Event event;
 
     @Column(columnDefinition = "json")
-    @Convert(converter = MapConverter.class)
-    private Map<String, Object> successFormat;
+    @Convert(converter = JsonConverter.class)
+    private Map<String, String> jsonString;
 
     public SuccessRecord(String token, Event event) {
         this.token = token;

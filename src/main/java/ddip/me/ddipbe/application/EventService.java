@@ -7,7 +7,6 @@ import ddip.me.ddipbe.domain.SuccessRecord;
 import ddip.me.ddipbe.domain.repository.EventRepository;
 import ddip.me.ddipbe.domain.repository.MemberRepository;
 import ddip.me.ddipbe.domain.repository.PermitRepository;
-import ddip.me.ddipbe.global.util.ParsingJson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -26,12 +25,11 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final PermitRepository permitRepository;
-    private final ParsingJson parsingJson;
 
     private final MemberRepository memberRepository; // TODO - MemberServiceLayer에서 호출로 추후 리팩터링
 
     @Transactional
-    public Event createEvent(String title, Integer permitCount, String content, ZonedDateTime start, ZonedDateTime end, Long memberId, String successFormat) {
+    public Event createEvent(String title, Integer permitCount, String content, ZonedDateTime start, ZonedDateTime end, Long memberId, Map<String,String> jsonString) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
 
@@ -47,7 +45,7 @@ public class EventService {
                 start,
                 end,
                 findMember,
-                parsingJson.parsingStringToMap(successFormat)
+                jsonString
         );
         event = eventRepository.save(event);
 

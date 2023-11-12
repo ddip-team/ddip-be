@@ -13,14 +13,14 @@ public class CreateEventReq {
     private final String successContent;
     private final ZonedDateTime startDateTime;
     private final ZonedDateTime endDateTime;
-    private String successFormat;
+    private Map<String, String> jsonString;
 
-    public CreateEventReq(String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime,String successFormat) {
+    public CreateEventReq(String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime,Map<String, String> jsonString) {
         this.title = title;
         this.limitCount = limitCount;
         this.successContent = successContent;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
-        this.successFormat = successFormat;
+        this.jsonString = jsonString;
     }
 }

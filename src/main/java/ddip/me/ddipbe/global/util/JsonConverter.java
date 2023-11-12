@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @Converter
-public class MapConverter implements AttributeConverter<Map<String,String>,String> {
+public class JsonConverter implements AttributeConverter<Map<String,String>,String> {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

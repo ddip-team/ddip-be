@@ -1,8 +1,6 @@
 package ddip.me.ddipbe.domain;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import ddip.me.ddipbe.global.util.MapConverter;
-import jakarta.annotation.Nullable;
+import ddip.me.ddipbe.global.util.JsonConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -47,10 +45,10 @@ public class Event {
     private Member member;
 
     @Column(columnDefinition = "json")
-    @Convert(converter = MapConverter.class)
-    private Map<String, String> successFormat;
+    @Convert(converter = JsonConverter.class)
+    private Map<String, String> jsonString;
 
-    public Event(UUID uuid, String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime, Member member, Map<String,String> successFormat) {
+    public Event(UUID uuid, String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime, Member member, Map<String,String> jsonString) {
         this.uuid = uuid;
         this.title = title;
         this.limitCount = limitCount;
@@ -59,7 +57,7 @@ public class Event {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.member = member;
-        this.successFormat = successFormat;
+        this.jsonString = jsonString;
     }
 
     public boolean isOpen(ZonedDateTime now) {
