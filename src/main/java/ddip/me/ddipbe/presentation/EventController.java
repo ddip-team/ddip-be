@@ -1,7 +1,6 @@
 package ddip.me.ddipbe.presentation;
 
 import ddip.me.ddipbe.application.EventService;
-import ddip.me.ddipbe.application.model.Page;
 import ddip.me.ddipbe.domain.Event;
 import ddip.me.ddipbe.domain.SuccessRecord;
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
@@ -13,6 +12,7 @@ import ddip.me.ddipbe.presentation.dto.request.UpdateSuccessInputInfoReq;
 import ddip.me.ddipbe.presentation.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -45,20 +45,15 @@ public class EventController {
     }
 
     @GetMapping("/me")
-    public ResponseEnvelope<Page<EventOwnRes>> findOwnEvent(
+    public ResponseEnvelope<PageRes<EventOwnRes>> findOwnEvent(
             @SessionMemberId Long memberId,
             PageReq pageReq,
             @RequestParam(required = false) String open
     ) {
         boolean checkOpen = open != null;
-        Page<Event> ownEvents = eventService.findOwnEvents(memberId, pageReq.getPage(), pageReq.getSize(), checkOpen);
+        Page<Event> ownEventPage = eventService.findOwnEvents(memberId, pageReq.getPage(), pageReq.getSize(), checkOpen);
 
-        return new ResponseEnvelope<>(
-                new Page<>(
-                        ownEvents.getPageInfo(),
-                        ownEvents.getPageData().stream().map(EventOwnRes::new).toList()
-                )
-        );
+        return new ResponseEnvelope<>(new PageRes<>(ownEventPage.map(EventOwnRes::new)));
     }
 
     @PostMapping("/{uuid}/apply")

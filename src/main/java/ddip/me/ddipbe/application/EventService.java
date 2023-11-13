@@ -1,7 +1,6 @@
 package ddip.me.ddipbe.application;
 
 import ddip.me.ddipbe.application.exception.*;
-import ddip.me.ddipbe.application.model.Page;
 import ddip.me.ddipbe.domain.Event;
 import ddip.me.ddipbe.domain.Member;
 import ddip.me.ddipbe.domain.SuccessRecord;
@@ -10,6 +9,7 @@ import ddip.me.ddipbe.domain.repository.MemberRepository;
 import ddip.me.ddipbe.domain.repository.PermitRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -73,31 +73,21 @@ public class EventService {
         Member foundMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
 
-        org.springframework.data.domain.Page<Event> eventPage;
+        Page<Event> eventPage;
         if (filterOpen) {
             ZonedDateTime now = ZonedDateTime.now();
-            eventPage = eventRepository.findAllByMemberAndStartDateTimeBeforeAndEndDateTimeAfter(
+            return eventRepository.findAllByMemberAndStartDateTimeBeforeAndEndDateTimeAfter(
                     foundMember,
                     now,
                     now,
                     PageRequest.of(page - 1, size, Sort.by("createdAt").descending())
             );
         } else {
-            eventPage = eventRepository.findAllByMember(
+            return eventRepository.findAllByMember(
                     foundMember,
                     PageRequest.of(page - 1, size, Sort.by("createdAt").descending())
             );
         }
-
-        return new Page<>(
-                new Page.PageInfo(
-                        eventPage.getNumber() + 1,
-                        eventPage.getSize(),
-                        eventPage.getTotalPages(),
-                        eventPage.getTotalElements()
-                ),
-                eventPage.getContent()
-        );
     }
 
     private boolean eventEndTimeIsValidValue(ZonedDateTime start, ZonedDateTime end) {

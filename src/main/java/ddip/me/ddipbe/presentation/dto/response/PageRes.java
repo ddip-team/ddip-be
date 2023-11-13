@@ -1,11 +1,12 @@
-package ddip.me.ddipbe.application.model;
+package ddip.me.ddipbe.presentation.dto.response;
 
 import lombok.Getter;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 @Getter
-public class Page<T> {
+public class PageRes<T> {
 
     @Getter
     public static class PageInfo {
@@ -25,8 +26,13 @@ public class Page<T> {
     private final PageInfo pageInfo;
     private final List<T> pageData;
 
-    public Page(PageInfo pageInfo, List<T> pageData) {
-        this.pageInfo = pageInfo;
-        this.pageData = pageData;
+    public PageRes(Page<T> page) {
+        this.pageInfo = new PageInfo(
+                page.getNumber() + 1,
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements()
+        );
+        this.pageData = page.getContent();
     }
 }
