@@ -66,3 +66,12 @@ resource "aws_route53_record" "api" {
   records         = [aws_alb.default.dns_name]
   zone_id         = aws_route53_zone.default.zone_id
 }
+
+resource "aws_route53_record" "cdn" {
+  allow_overwrite = true
+  name            = "cdn.${var.domain}"
+  ttl             = 300
+  type            = "CNAME"
+  records         = [aws_cloudfront_distribution.s3_distribution.domain_name]
+  zone_id         = aws_route53_zone.default.zone_id
+}
