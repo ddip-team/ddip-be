@@ -1,4 +1,4 @@
-package ddip.me.ddipbe.application;
+package ddip.me.ddipbe.application.model;
 
 public enum UploadType {
     EVENT_THUMBNAIL("eventThumbnails"),
@@ -11,7 +11,7 @@ public enum UploadType {
         this.keyPrefix = eventSuccessImages;
     }
 
-    String toFileKey(String fileName) {
+    public String toFileKey(String fileName) {
         return "data/" + this.keyPrefix + "/" + fileName;
     }
 }

@@ -1,8 +1,8 @@
 package ddip.me.ddipbe.presentation;
 
 import ddip.me.ddipbe.application.PresignedService;
-import ddip.me.ddipbe.application.PresignedUrl;
-import ddip.me.ddipbe.application.UploadType;
+import ddip.me.ddipbe.application.model.PresignedUrl;
+import ddip.me.ddipbe.application.model.UploadType;
 import ddip.me.ddipbe.global.dto.ResponseEnvelope;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

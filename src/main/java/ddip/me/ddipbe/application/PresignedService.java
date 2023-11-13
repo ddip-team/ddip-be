@@ -1,5 +1,7 @@
 package ddip.me.ddipbe.application;
 
+import ddip.me.ddipbe.application.model.PresignedUrl;
+import ddip.me.ddipbe.application.model.UploadType;
 import ddip.me.ddipbe.global.util.FileNameGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
