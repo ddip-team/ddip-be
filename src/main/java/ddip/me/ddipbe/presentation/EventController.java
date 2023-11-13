@@ -14,7 +14,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -33,10 +32,7 @@ public class EventController {
                 createEventReq.getSuccessContent(),
                 createEventReq.getStartDateTime(),
                 createEventReq.getEndDateTime(),
-                memberId,
-                createEventReq.getJsonString(),
-                createEventReq.getImgUrl(),
-                createEventReq.getSuccessImgUrl());
+                memberId);
         return new ResponseEnvelope<>(new EventUUIDRes(event.getUuid()));
     }
 
