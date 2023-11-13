@@ -7,6 +7,7 @@ import ddip.me.ddipbe.global.annotation.SessionMemberId;
 import ddip.me.ddipbe.global.dto.ResponseEnvelope;
 import ddip.me.ddipbe.presentation.dto.request.CreateEventReq;
 import ddip.me.ddipbe.presentation.dto.request.CreateJsonStringReq;
+import ddip.me.ddipbe.presentation.dto.request.SuccessRecordPageReq;
 import ddip.me.ddipbe.presentation.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -73,5 +74,11 @@ public class EventController {
     public ResponseEnvelope<SuccessRecordJsonStringRes> createSuccessRecordJsonString(@PathVariable UUID uuid, @RequestBody CreateJsonStringReq createJsonStringReq, @RequestParam String token){
         SuccessRecord successRecord = eventService.createSuccessRecordJsonString(uuid, createJsonStringReq.getJsonString(), token);
         return new ResponseEnvelope<>(new SuccessRecordJsonStringRes(successRecord));
+    }
+
+    @GetMapping("/{uuid}/success-records")
+    public ResponseEnvelope<?> findSuccessRecords(@PathVariable UUID uuid, SuccessRecordPageReq successRecordPageReq){
+        List<SuccessRecord> successRecords = eventService.findSuccessRecords(uuid, successRecordPageReq.getPageIndex(), successRecordPageReq.getPageIndex());
+        return new ResponseEnvelope<>(successRecords);
     }
 }

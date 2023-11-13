@@ -9,6 +9,9 @@ import ddip.me.ddipbe.domain.repository.MemberRepository;
 import ddip.me.ddipbe.domain.repository.PermitRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,4 +114,8 @@ public class EventService {
         return successRecord;
     }
 
+    public List<SuccessRecord> findSuccessRecords(UUID uuid, int pageIndex, int pageSize){
+        Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by("timeStamp").ascending());
+        return permitRepository.findByEventUuidOrderByTimeStampAsc(uuid, pageable);
+    }
 }
