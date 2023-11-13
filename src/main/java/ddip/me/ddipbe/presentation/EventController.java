@@ -80,6 +80,7 @@ public class EventController {
                                                                                 successRecordPageReq.getPageIndex(),
                                                                                 successRecordPageReq.getPageSize(),
                                                                                 successRecordPageReq.getSortProperty());
-        return new ResponseEnvelope<>(successRecords);
+        List<SuccessRecordPageRes> pageSuccessRecords = successRecords.stream().map(SuccessRecordPageRes::new).toList();
+        return new ResponseEnvelope<>(pageSuccessRecords);
     }
 }
