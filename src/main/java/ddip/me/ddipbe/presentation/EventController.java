@@ -78,7 +78,7 @@ public class EventController {
     public ResponseEnvelope<?> findSuccessRecords(@PathVariable UUID uuid, SuccessRecordPageReq successRecordPageReq){
         List<SuccessRecord> successRecords = eventService.findSuccessRecords(uuid,
                                                                                 successRecordPageReq.getPageIndex(),
-                                                                                successRecordPageReq.getPageIndex(),
+                                                                                successRecordPageReq.getPageSize(),
                                                                                 successRecordPageReq.getSortProperty());
         return new ResponseEnvelope<>(successRecords);
     }
