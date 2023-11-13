@@ -105,10 +105,10 @@ public class EventService {
     }
 
     @Transactional
-    public SuccessRecord createSuccessRecordJsonString(UUID uuid, Map<String,String> jsonString, String token){
+    public SuccessRecord updateSuccessRecordSuccessInputInfo(UUID uuid, Map<String,String> successInputInfo, String token){
         SuccessRecord successRecord = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
-        if (Optional.ofNullable(successRecord.getJsonString()).isEmpty()){
-            successRecord.createJsonString(jsonString);
+        if (Optional.ofNullable(successRecord.getSuccessInputInfo()).isEmpty()){
+            successRecord.updateSuccessInputInfo(successInputInfo);
         }
         return successRecord;
     }

@@ -6,7 +6,7 @@ import ddip.me.ddipbe.domain.SuccessRecord;
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
 import ddip.me.ddipbe.global.dto.ResponseEnvelope;
 import ddip.me.ddipbe.presentation.dto.request.CreateEventReq;
-import ddip.me.ddipbe.presentation.dto.request.CreateJsonStringReq;
+import ddip.me.ddipbe.presentation.dto.request.UpdateSuccessInputInfoReq;
 import ddip.me.ddipbe.presentation.dto.request.SuccessRecordPageReq;
 import ddip.me.ddipbe.presentation.dto.response.*;
 import lombok.RequiredArgsConstructor;
@@ -63,15 +63,15 @@ public class EventController {
     }
 
     @GetMapping("/{uuid}/form")
-    public ResponseEnvelope<SuccessRecordJsonStringRes> findSuccessRecordJsonString(@PathVariable UUID uuid, @RequestParam String token){
+    public ResponseEnvelope<SuccessRecordSuccessInputInfoRes> findSuccessRecordJsonString(@PathVariable UUID uuid, @RequestParam String token){
         SuccessRecord successRecord = eventService.findEventSuccessJsonString(uuid, token);
-        return new ResponseEnvelope<>(new SuccessRecordJsonStringRes(successRecord));
+        return new ResponseEnvelope<>(new SuccessRecordSuccessInputInfoRes(successRecord));
     }
 
     @PostMapping("/{uuid}/form")
-    public ResponseEnvelope<SuccessRecordJsonStringRes> createSuccessRecordJsonString(@PathVariable UUID uuid, @RequestBody CreateJsonStringReq createJsonStringReq, @RequestParam String token){
-        SuccessRecord successRecord = eventService.createSuccessRecordJsonString(uuid, createJsonStringReq.getJsonString(), token);
-        return new ResponseEnvelope<>(new SuccessRecordJsonStringRes(successRecord));
+    public ResponseEnvelope<SuccessRecordSuccessInputInfoRes> updateSuccessRecordJsonString(@PathVariable UUID uuid, @RequestBody UpdateSuccessInputInfoReq updateSuccessInputInfoReq, @RequestParam String token){
+        SuccessRecord successRecord = eventService.updateSuccessRecordSuccessInputInfo(uuid, updateSuccessInputInfoReq.getSuccessInputInfo(), token);
+        return new ResponseEnvelope<>(new SuccessRecordSuccessInputInfoRes(successRecord));
     }
 
     @GetMapping("/{uuid}/success-records")

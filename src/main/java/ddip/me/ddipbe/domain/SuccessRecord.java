@@ -37,7 +37,7 @@ public class SuccessRecord {
         this.timestamp = timestamp;
     }
 
-    public void createJsonString(Map<String, String> successInputInfo){
+    public void updateSuccessInputInfo(Map<String, String> successInputInfo){
         this.successInputInfo = successInputInfo;
     }
 }
