@@ -13,7 +13,7 @@ public class CreateEventReq {
     private final String successContent;
     private final ZonedDateTime startDateTime;
     private final ZonedDateTime endDateTime;
-    private Map<String, String> jsonString;
+    private final Map<String, String> jsonString;
     private final String imgUrl;
     private final String successImgUrl;
 

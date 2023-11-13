@@ -6,5 +6,9 @@ import java.util.Map;
 
 @Getter
 public class CreateJsonStringReq {
-    private Map<String, String> jsonString;
+    private final Map<String, String> jsonString;
+
+    public CreateJsonStringReq(Map<String, String> jsonString) {
+        this.jsonString = jsonString;
+    }
 }
