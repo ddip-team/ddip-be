@@ -1,19 +1,20 @@
 package ddip.me.ddipbe.presentation;
 
 import ddip.me.ddipbe.application.EventService;
+import ddip.me.ddipbe.application.model.Page;
 import ddip.me.ddipbe.domain.Event;
 import ddip.me.ddipbe.domain.SuccessRecord;
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
 import ddip.me.ddipbe.global.dto.ResponseEnvelope;
 import ddip.me.ddipbe.presentation.dto.request.CreateEventReq;
-import ddip.me.ddipbe.presentation.dto.request.UpdateSuccessInputInfoReq;
+import ddip.me.ddipbe.presentation.dto.request.PageReq;
 import ddip.me.ddipbe.presentation.dto.request.SuccessRecordPageReq;
+import ddip.me.ddipbe.presentation.dto.request.UpdateSuccessInputInfoReq;
 import ddip.me.ddipbe.presentation.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -30,6 +31,7 @@ public class EventController {
                 createEventReq.getTitle(),
                 createEventReq.getLimitCount(),
                 createEventReq.getSuccessContent(),
+                createEventReq.getSuccessImageUrl(),
                 createEventReq.getStartDateTime(),
                 createEventReq.getEndDateTime(),
                 memberId);
@@ -37,17 +39,26 @@ public class EventController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEnvelope<?> findEventByUuid(@PathVariable UUID uuid) {
+    public ResponseEnvelope<EventDetailRes> findEventByUuid(@PathVariable UUID uuid) {
         Event foundEvent = eventService.findEventByUuid(uuid);
         return new ResponseEnvelope<>(new EventDetailRes(foundEvent));
     }
 
     @GetMapping("/me")
-    public ResponseEnvelope<?> findOwnEvent(@SessionMemberId Long memberId, @RequestParam(required = false) String open) {
+    public ResponseEnvelope<Page<EventOwnRes>> findOwnEvent(
+            @SessionMemberId Long memberId,
+            PageReq pageReq,
+            @RequestParam(required = false) String open
+    ) {
         boolean checkOpen = open != null;
-        List<Event> ownEvents = eventService.findOwnEvent(memberId, checkOpen);
-        List<EventOwnRes> ownEvnetList = ownEvents.stream().map(EventOwnRes::new).toList();
-        return new ResponseEnvelope<>(ownEvnetList);
+        Page<Event> ownEvents = eventService.findOwnEvents(memberId, pageReq.getPage(), pageReq.getSize(), checkOpen);
+
+        return new ResponseEnvelope<>(
+                new Page<>(
+                        ownEvents.getPageInfo(),
+                        ownEvents.getPageData().stream().map(EventOwnRes::new).toList()
+                )
+        );
     }
 
     @PostMapping("/{uuid}/apply")
@@ -63,23 +74,23 @@ public class EventController {
     }
 
     @GetMapping("/{uuid}/form")
-    public ResponseEnvelope<SuccessRecordSuccessInputInfoRes> findSuccessRecordSuccessInputInfo(@PathVariable UUID uuid, @RequestParam String token){
+    public ResponseEnvelope<SuccessRecordSuccessInputInfoRes> findSuccessRecordSuccessInputInfo(@PathVariable UUID uuid, @RequestParam String token) {
         SuccessRecord successRecord = eventService.findEventSuccessJsonString(uuid, token);
         return new ResponseEnvelope<>(new SuccessRecordSuccessInputInfoRes(successRecord));
     }
 
     @PostMapping("/{uuid}/form")
-    public ResponseEnvelope<SuccessRecordSuccessInputInfoRes> updateSuccessRecordSuccessInputInfo(@PathVariable UUID uuid, @RequestBody UpdateSuccessInputInfoReq updateSuccessInputInfoReq, @RequestParam String token){
+    public ResponseEnvelope<SuccessRecordSuccessInputInfoRes> updateSuccessRecordSuccessInputInfo(@PathVariable UUID uuid, @RequestBody UpdateSuccessInputInfoReq updateSuccessInputInfoReq, @RequestParam String token) {
         SuccessRecord successRecord = eventService.updateSuccessRecordSuccessInputInfo(uuid, updateSuccessInputInfoReq.getSuccessInputInfo(), token);
         return new ResponseEnvelope<>(new SuccessRecordSuccessInputInfoRes(successRecord));
     }
 
     @GetMapping("/{uuid}/success-records")
-    public ResponseEnvelope<?> findSuccessRecords(@PathVariable UUID uuid, SuccessRecordPageReq successRecordPageReq){
+    public ResponseEnvelope<?> findSuccessRecords(@PathVariable UUID uuid, SuccessRecordPageReq successRecordPageReq) {
         List<SuccessRecord> successRecords = eventService.findSuccessRecords(uuid,
-                                                                                successRecordPageReq.getPageIndex(),
-                                                                                successRecordPageReq.getPageSize(),
-                                                                                successRecordPageReq.getSortProperty());
+                successRecordPageReq.getPageIndex(),
+                successRecordPageReq.getPageSize(),
+                successRecordPageReq.getSortProperty());
         List<SuccessRecordPageRes> pageSuccessRecords = successRecords.stream().map(SuccessRecordPageRes::new).toList();
         return new ResponseEnvelope<>(pageSuccessRecords);
     }

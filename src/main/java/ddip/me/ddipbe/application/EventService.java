@@ -1,6 +1,7 @@
 package ddip.me.ddipbe.application;
 
 import ddip.me.ddipbe.application.exception.*;
+import ddip.me.ddipbe.application.model.Page;
 import ddip.me.ddipbe.domain.Event;
 import ddip.me.ddipbe.domain.Member;
 import ddip.me.ddipbe.domain.SuccessRecord;
@@ -33,7 +34,13 @@ public class EventService {
     private final MemberRepository memberRepository; // TODO - MemberServiceLayer에서 호출로 추후 리팩터링
 
     @Transactional
-    public Event createEvent(String title, Integer permitCount, String content, ZonedDateTime start, ZonedDateTime end, Long memberId) {
+    public Event createEvent(String title,
+                             Integer permitCount,
+                             String successContent,
+                             String successImageUrl,
+                             ZonedDateTime start,
+                             ZonedDateTime end,
+                             Long memberId) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
 
@@ -45,7 +52,9 @@ public class EventService {
                 UUID.randomUUID(),
                 title,
                 permitCount,
-                content,
+                successContent,
+                successImageUrl,
+                successImageUrl,
                 start,
                 end,
                 findMember
@@ -60,13 +69,35 @@ public class EventService {
                 .orElseThrow(() -> new EventNotFoundException("DB에서 UUID를 찾을 수 없습니다."));
     }
 
-    public List<Event> findOwnEvent(Long memberId, boolean filterOpen) {
-        Member foundMember = memberRepository.findById(memberId).orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
+    public Page<Event> findOwnEvents(Long memberId, int page, int size, boolean filterOpen) {
+        Member foundMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
+
+        org.springframework.data.domain.Page<Event> eventPage;
         if (filterOpen) {
             ZonedDateTime now = ZonedDateTime.now();
-            return eventRepository.findAllByStartDateTimeBeforeAndEndDateTimeAfter(now, now);
+            eventPage = eventRepository.findAllByMemberAndStartDateTimeBeforeAndEndDateTimeAfter(
+                    foundMember,
+                    now,
+                    now,
+                    PageRequest.of(page - 1, size, Sort.by("createdAt").descending())
+            );
+        } else {
+            eventPage = eventRepository.findAllByMember(
+                    foundMember,
+                    PageRequest.of(page - 1, size, Sort.by("createdAt").descending())
+            );
         }
-        return eventRepository.findAllByMember(foundMember);
+
+        return new Page<>(
+                new Page.PageInfo(
+                        eventPage.getNumber() + 1,
+                        eventPage.getSize(),
+                        eventPage.getTotalPages(),
+                        eventPage.getTotalElements()
+                ),
+                eventPage.getContent()
+        );
     }
 
     private boolean eventEndTimeIsValidValue(ZonedDateTime start, ZonedDateTime end) {

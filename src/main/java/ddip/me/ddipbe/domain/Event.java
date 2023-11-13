@@ -34,9 +34,15 @@ public class Event {
 
     private String successContent;
 
+    private String successImageUrl;
+
+    private String thumbnailImageUrl;
+
     private ZonedDateTime startDateTime;
 
     private ZonedDateTime endDateTime;
+
+    private ZonedDateTime createdAt;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
     private List<SuccessRecord> successRecords = new ArrayList<>();
@@ -50,15 +56,26 @@ public class Event {
     @Nullable
     private Map<String, String> successInputInfo;
 
-    public Event(UUID uuid, String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime, Member member) {
+    public Event(UUID uuid,
+                 String title,
+                 Integer limitCount,
+                 String successContent,
+                 String successImageUrl,
+                 String thumbnailImageUrl,
+                 ZonedDateTime startDateTime,
+                 ZonedDateTime endDateTime,
+                 Member member) {
         this.uuid = uuid;
         this.title = title;
         this.limitCount = limitCount;
         this.remainCount = limitCount;
         this.successContent = successContent;
+        this.successImageUrl = successImageUrl;
+        this.thumbnailImageUrl = thumbnailImageUrl;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.member = member;
+        this.createdAt = ZonedDateTime.now();
     }
 
     public boolean isOpen(ZonedDateTime now) {
