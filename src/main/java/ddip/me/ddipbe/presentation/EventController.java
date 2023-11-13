@@ -61,9 +61,9 @@ public class EventController {
     }
 
     @GetMapping("/{uuid}/success")
-    public ResponseEnvelope<EventRes> findSuccessEvent(@PathVariable UUID uuid, @RequestParam String token) {
+    public ResponseEnvelope<EventSuccessRes> findSuccessEvent(@PathVariable UUID uuid, @RequestParam String token) {
         Event event = eventService.findSuccessEvent(uuid, token);
-        return new ResponseEnvelope<>(new EventRes(event));
+        return new ResponseEnvelope<>(new EventSuccessRes(event));
     }
 
     @GetMapping("/{uuid}/form")
