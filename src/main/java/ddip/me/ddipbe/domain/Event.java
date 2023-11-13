@@ -50,7 +50,9 @@ public class Event {
     @Nullable
     private Map<String, String> jsonString;
 
-    public Event(UUID uuid, String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime, Member member, Map<String,String> jsonString) {
+    private String imgUrl;
+
+    public Event(UUID uuid, String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime, Member member, Map<String,String> jsonString, String imgUrl) {
         this.uuid = uuid;
         this.title = title;
         this.limitCount = limitCount;
@@ -60,6 +62,7 @@ public class Event {
         this.endDateTime = endDateTime;
         this.member = member;
         this.jsonString = jsonString;
+        this.imgUrl = imgUrl;
     }
 
     public boolean isOpen(ZonedDateTime now) {
