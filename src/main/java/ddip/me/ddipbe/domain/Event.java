@@ -1,6 +1,7 @@
 package ddip.me.ddipbe.domain;
 
 import ddip.me.ddipbe.global.util.JsonConverter;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -46,6 +47,7 @@ public class Event {
 
     @Column(columnDefinition = "json")
     @Convert(converter = JsonConverter.class)
+    @Nullable
     private Map<String, String> jsonString;
 
     public Event(UUID uuid, String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime, Member member, Map<String,String> jsonString) {
