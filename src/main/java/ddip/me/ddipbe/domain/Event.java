@@ -48,7 +48,7 @@ public class Event {
     @Column(columnDefinition = "json")
     @Convert(converter = JsonConverter.class)
     @Nullable
-    private Map<String, String> jsonString;
+    private Map<String, String> successInputInfo;
 
     public Event(UUID uuid, String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime, Member member) {
         this.uuid = uuid;

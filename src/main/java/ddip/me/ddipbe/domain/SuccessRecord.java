@@ -27,17 +27,17 @@ public class SuccessRecord {
     @Column(columnDefinition = "json")
     @Convert(converter = JsonConverter.class)
     @Nullable
-    private Map<String, String> jsonString;
+    private Map<String, String> successInputInfo;
 
-    private ZonedDateTime timeStamp;
+    private ZonedDateTime timestamp;
 
-    public SuccessRecord(String token, Event event, ZonedDateTime timeStamp) {
+    public SuccessRecord(String token, Event event, ZonedDateTime timestamp) {
         this.token = token;
         this.event = event;
-        this.timeStamp = timeStamp;
+        this.timestamp = timestamp;
     }
 
-    public void createJsonString(Map<String, String> jsonString){
-        this.jsonString = jsonString;
+    public void createJsonString(Map<String, String> successInputInfo){
+        this.successInputInfo = successInputInfo;
     }
 }
