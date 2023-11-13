@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
@@ -98,7 +99,15 @@ public class EventService {
     }
 
     public SuccessRecord findEventSuccessJsonString(UUID uuid, String token){
+        return permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
+    }
+
+    @Transactional
+    public SuccessRecord createSuccessRecordJsonString(UUID uuid, Map<String,String> jsonString, String token){
         SuccessRecord successRecord = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
+        if (Optional.ofNullable(successRecord.getJsonString()).isEmpty()){
+            successRecord.createJsonString(jsonString);
+        }
         return successRecord;
     }
 }

@@ -6,6 +6,7 @@ import ddip.me.ddipbe.domain.SuccessRecord;
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
 import ddip.me.ddipbe.global.dto.ResponseEnvelope;
 import ddip.me.ddipbe.presentation.dto.request.CreateEventReq;
+import ddip.me.ddipbe.presentation.dto.request.CreateJsonStringReq;
 import ddip.me.ddipbe.presentation.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -63,8 +64,14 @@ public class EventController {
     }
 
     @GetMapping("/{uuid}/form")
-    public ResponseEnvelope<?> findEventSuccessJsonString(@PathVariable UUID uuid, @RequestParam String token){
+    public ResponseEnvelope<SuccessRecordJsonStringRes> findSuccessRecordJsonString(@PathVariable UUID uuid, @RequestParam String token){
         SuccessRecord successRecord = eventService.findEventSuccessJsonString(uuid, token);
+        return new ResponseEnvelope<>(new SuccessRecordJsonStringRes(successRecord));
+    }
+
+    @PostMapping("/{uuid}/form")
+    public ResponseEnvelope<SuccessRecordJsonStringRes> createSuccessRecordJsonString(@PathVariable UUID uuid, @RequestBody CreateJsonStringReq createJsonStringReq, @RequestParam String token){
+        SuccessRecord successRecord = eventService.createSuccessRecordJsonString(uuid, createJsonStringReq.getJsonString(), token);
         return new ResponseEnvelope<>(new SuccessRecordJsonStringRes(successRecord));
     }
 }
