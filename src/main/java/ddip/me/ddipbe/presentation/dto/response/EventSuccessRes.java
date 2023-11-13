@@ -1,17 +1,19 @@
 package ddip.me.ddipbe.presentation.dto.response;
 
 import ddip.me.ddipbe.domain.Event;
+import lombok.Getter;
 
 import java.util.Map;
 
+@Getter
 public class EventSuccessRes {
-    private String successContent;
-    private String successImgUrl;
-    private Map<String, String> jsonString;
+    private final String successContent;
+    private final String successImageUrl;
+    private final Map<String, String> jsonString;
 
     public EventSuccessRes(Event event) {
         this.successContent = event.getSuccessContent();
-        this.successImgUrl = event.getSuccessImgUrl();
-        this.jsonString = event.getJsonString();
+        this.successImageUrl = event.getSuccessImageUrl();
+        this.jsonString = event.getSuccessInputInfo();
     }
 }
