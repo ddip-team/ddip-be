@@ -90,7 +90,7 @@ public class EventService {
             throw new EventCapacityFullException();
         }
 
-        event.addPermit(new SuccessRecord(token, event));
+        event.addPermit(new SuccessRecord(token, event,ZonedDateTime.now()));
     }
 
     public Event findSuccessEvent(UUID uuid, String token) {
@@ -110,4 +110,5 @@ public class EventService {
         }
         return successRecord;
     }
+
 }
