@@ -3,6 +3,7 @@ package ddip.me.ddipbe.global.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import ddip.me.ddipbe.application.exception.EventJsonStringNullException;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
@@ -26,6 +27,9 @@ public class JsonConverter implements AttributeConverter<Map<String,String>,Stri
     @Override
     public Map<String, String> convertToEntityAttribute(String successFormat) {
         try {
+            if (successFormat == null){
+                throw new EventJsonStringNullException();
+            }
             return objectMapper.readValue(successFormat, new TypeReference<Map<String, String>>(){});
         } catch (IOException e) {
             throw new RuntimeException("Error converting JSON to Map", e);
