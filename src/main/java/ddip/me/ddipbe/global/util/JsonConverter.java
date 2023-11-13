@@ -18,6 +18,9 @@ public class JsonConverter implements AttributeConverter<Map<String,String>,Stri
     @Override
     public String convertToDatabaseColumn(Map<String, String> attribute) {
         try {
+            if (attribute == null){
+                throw new EventJsonStringNullException();
+            }
             return objectMapper.writeValueAsString(attribute);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error converting Map to JSON", e);
@@ -27,9 +30,6 @@ public class JsonConverter implements AttributeConverter<Map<String,String>,Stri
     @Override
     public Map<String, String> convertToEntityAttribute(String successFormat) {
         try {
-            if (successFormat == null){
-                throw new EventJsonStringNullException();
-            }
             return objectMapper.readValue(successFormat, new TypeReference<Map<String, String>>(){});
         } catch (IOException e) {
             throw new RuntimeException("Error converting JSON to Map", e);
