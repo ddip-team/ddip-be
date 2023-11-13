@@ -33,7 +33,7 @@ public class EventService {
     private final MemberRepository memberRepository; // TODO - MemberServiceLayer에서 호출로 추후 리팩터링
 
     @Transactional
-    public Event createEvent(String title, Integer permitCount, String content, ZonedDateTime start, ZonedDateTime end, Long memberId, Map<String,String> jsonString, String imgUrl) {
+    public Event createEvent(String title, Integer permitCount, String content, ZonedDateTime start, ZonedDateTime end, Long memberId, Map<String,String> jsonString, String imgUrl, String successImgUrl) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
 
@@ -50,7 +50,8 @@ public class EventService {
                 end,
                 findMember,
                 jsonString,
-                imgUrl
+                imgUrl,
+                successImgUrl
         );
         event = eventRepository.save(event);
 

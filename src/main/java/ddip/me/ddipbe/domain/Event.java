@@ -52,7 +52,9 @@ public class Event {
 
     private String imgUrl;
 
-    public Event(UUID uuid, String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime, Member member, Map<String,String> jsonString, String imgUrl) {
+    private String successImgUrl;
+
+    public Event(UUID uuid, String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime, Member member, Map<String,String> jsonString, String imgUrl, String successImgUrl) {
         this.uuid = uuid;
         this.title = title;
         this.limitCount = limitCount;
@@ -63,6 +65,7 @@ public class Event {
         this.member = member;
         this.jsonString = jsonString;
         this.imgUrl = imgUrl;
+        this.successImgUrl = successImgUrl;
     }
 
     public boolean isOpen(ZonedDateTime now) {

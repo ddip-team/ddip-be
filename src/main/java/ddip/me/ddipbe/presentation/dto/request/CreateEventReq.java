@@ -14,9 +14,10 @@ public class CreateEventReq {
     private final ZonedDateTime startDateTime;
     private final ZonedDateTime endDateTime;
     private Map<String, String> jsonString;
-    private String imgUrl;
+    private final String imgUrl;
+    private final String successImgUrl;
 
-    public CreateEventReq(String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime,Map<String, String> jsonString, String imgUrl) {
+    public CreateEventReq(String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime,Map<String, String> jsonString, String imgUrl, String successImgUrl) {
         this.title = title;
         this.limitCount = limitCount;
         this.successContent = successContent;
@@ -24,5 +25,6 @@ public class CreateEventReq {
         this.endDateTime = endDateTime;
         this.jsonString = jsonString;
         this.imgUrl = imgUrl;
+        this.successImgUrl = successImgUrl;
     }
 }

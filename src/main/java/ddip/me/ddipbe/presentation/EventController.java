@@ -35,7 +35,8 @@ public class EventController {
                 createEventReq.getEndDateTime(),
                 memberId,
                 createEventReq.getJsonString(),
-                createEventReq.getImgUrl());
+                createEventReq.getImgUrl(),
+                createEventReq.getSuccessImgUrl());
         return new ResponseEnvelope<>(new EventUUIDRes(event.getUuid()));
     }
 
