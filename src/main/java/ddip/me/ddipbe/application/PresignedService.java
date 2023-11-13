@@ -16,6 +16,7 @@ import java.util.Map;
 public class PresignedService {
 
     private static final String METADATA_KEY_ORIGINAL_NAME = "original-name";
+    private static final Duration SIGNATURE_DURATION = Duration.ofMinutes(1);
 
     private final S3Presigner s3Presigner;
     private final String bucketName;
@@ -35,14 +36,14 @@ public class PresignedService {
         final String newFileName = FileNameGenerator.generateFileName(fileName);
         final String filePath = type.toFileKey(newFileName);
 
-        var putObjectRequest = PutObjectRequest.builder()
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(filePath)
                 .metadata(Map.of(METADATA_KEY_ORIGINAL_NAME, fileName))
                 .build();
 
-        var preSignRequest = PutObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(1))
+        PutObjectPresignRequest preSignRequest = PutObjectPresignRequest.builder()
+                .signatureDuration(SIGNATURE_DURATION)
                 .putObjectRequest(putObjectRequest)
                 .build();
 
