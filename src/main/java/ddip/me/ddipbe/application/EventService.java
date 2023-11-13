@@ -113,8 +113,8 @@ public class EventService {
         return successRecord;
     }
 
-    public List<SuccessRecord> findSuccessRecords(UUID uuid, int pageIndex, int pageSize){
-        Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by("timeStamp").ascending());
-        return permitRepository.findByEventUuidOrderByTimeStampAsc(uuid, pageable);
+    public List<SuccessRecord> findSuccessRecords(UUID uuid, int pageIndex, int pageSize, String sortProperty){
+        Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by(sortProperty).ascending());
+        return permitRepository.findByEventUuid(uuid, pageable);
     }
 }

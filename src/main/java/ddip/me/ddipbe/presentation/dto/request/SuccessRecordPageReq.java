@@ -6,4 +6,5 @@ import lombok.Getter;
 public class SuccessRecordPageReq {
     private int pageIndex;
     private int pageSize;
+    private String sortProperty;
 }

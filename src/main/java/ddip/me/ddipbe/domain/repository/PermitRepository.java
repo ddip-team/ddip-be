@@ -15,5 +15,5 @@ public interface PermitRepository extends JpaRepository<SuccessRecord, Long> {
 
     boolean existsByEventUuidAndToken(UUID uuid, String token);
 
-    List<SuccessRecord> findByEventUuidOrderByTimeStampAsc(UUID uuid, Pageable pageable);
+    List<SuccessRecord> findByEventUuid(UUID uuid, Pageable pageable);
 }
