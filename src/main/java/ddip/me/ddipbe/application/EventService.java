@@ -96,4 +96,9 @@ public class EventService {
         SuccessRecord successRecord = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
         return successRecord.getEvent();
     }
+
+    public SuccessRecord findEventSuccessJsonString(UUID uuid, String token){
+        SuccessRecord successRecord = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
+        return successRecord;
+    }
 }

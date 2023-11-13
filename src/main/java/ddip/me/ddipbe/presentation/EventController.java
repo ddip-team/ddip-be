@@ -2,13 +2,11 @@ package ddip.me.ddipbe.presentation;
 
 import ddip.me.ddipbe.application.EventService;
 import ddip.me.ddipbe.domain.Event;
+import ddip.me.ddipbe.domain.SuccessRecord;
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
 import ddip.me.ddipbe.global.dto.ResponseEnvelope;
 import ddip.me.ddipbe.presentation.dto.request.CreateEventReq;
-import ddip.me.ddipbe.presentation.dto.response.EventDetailRes;
-import ddip.me.ddipbe.presentation.dto.response.EventOwnRes;
-import ddip.me.ddipbe.presentation.dto.response.EventRes;
-import ddip.me.ddipbe.presentation.dto.response.EventUUIDRes;
+import ddip.me.ddipbe.presentation.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
@@ -62,5 +60,11 @@ public class EventController {
     public ResponseEnvelope<EventRes> findSuccessEvent(@PathVariable UUID uuid, @RequestParam String token) {
         Event event = eventService.findSuccessEvent(uuid, token);
         return new ResponseEnvelope<>(new EventRes(event));
+    }
+
+    @GetMapping("/{uuid}/form")
+    public ResponseEnvelope<?> findEventSuccessJsonString(@PathVariable UUID uuid, @RequestParam String token){
+        SuccessRecord successRecord = eventService.findEventSuccessJsonString(uuid, token);
+        return new ResponseEnvelope<>(new SuccessRecordJsonStringRes(successRecord));
     }
 }
