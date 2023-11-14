@@ -63,13 +63,13 @@ public class EventController {
     }
 
     @GetMapping("/{uuid}/form")
-    public ResponseEnvelope<SuccessRecordSuccessInputInfoRes> findSuccessRecordJsonString(@PathVariable UUID uuid, @RequestParam String token){
+    public ResponseEnvelope<SuccessRecordSuccessInputInfoRes> findSuccessRecordSuccessInputInfo(@PathVariable UUID uuid, @RequestParam String token){
         SuccessRecord successRecord = eventService.findEventSuccessJsonString(uuid, token);
         return new ResponseEnvelope<>(new SuccessRecordSuccessInputInfoRes(successRecord));
     }
 
     @PostMapping("/{uuid}/form")
-    public ResponseEnvelope<SuccessRecordSuccessInputInfoRes> updateSuccessRecordJsonString(@PathVariable UUID uuid, @RequestBody UpdateSuccessInputInfoReq updateSuccessInputInfoReq, @RequestParam String token){
+    public ResponseEnvelope<SuccessRecordSuccessInputInfoRes> updateSuccessRecordSuccessInputInfo(@PathVariable UUID uuid, @RequestBody UpdateSuccessInputInfoReq updateSuccessInputInfoReq, @RequestParam String token){
         SuccessRecord successRecord = eventService.updateSuccessRecordSuccessInputInfo(uuid, updateSuccessInputInfoReq.getSuccessInputInfo(), token);
         return new ResponseEnvelope<>(new SuccessRecordSuccessInputInfoRes(successRecord));
     }
