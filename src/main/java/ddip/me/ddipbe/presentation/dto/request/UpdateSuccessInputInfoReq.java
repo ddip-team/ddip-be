@@ -6,9 +6,9 @@ import java.util.Map;
 
 @Getter
 public class UpdateSuccessInputInfoReq {
-    private final Map<String, String> successInputInfo;
+    private Map<String, String> successInputInfo;
 
-    public UpdateSuccessInputInfoReq(Map<String, String> successInputInfo) {
-        this.successInputInfo = successInputInfo;
+    public UpdateSuccessInputInfoReq() {
+
     }
 }
