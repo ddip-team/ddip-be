@@ -12,6 +12,7 @@ import ddip.me.ddipbe.presentation.dto.response.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -23,6 +24,7 @@ public class EventController {
 
     private final EventService eventService;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseEnvelope<EventUUIDRes> createEvent(
             @Valid @RequestBody CreateEventReq createEventReq,
@@ -108,6 +110,7 @@ public class EventController {
         return new ResponseEnvelope<>(new FormInputValueRes(successRecord));
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("{uuid}/form")
     public ResponseEnvelope<?> registerSuccessRecordFormInputValue(
             @PathVariable UUID uuid,
