@@ -16,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
 public @interface MinutePreciseUTC {
-    String message() default "The datetime must be in UTC and minute-precise";
+    String message() default "시간 형식이 UTC이어야 하며, 분 단위까지만 입력 가능합니다.";
 
     Class<?>[] groups() default {};
 

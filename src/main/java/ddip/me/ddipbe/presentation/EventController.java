@@ -82,13 +82,13 @@ public class EventController {
     ) {
         eventService.updateEvent(
                 uuid,
-                createEventReq.getTitle(),
-                createEventReq.getLimitCount(),
-                createEventReq.getSuccessContent(),
-                createEventReq.getSuccessImageUrl(),
-                createEventReq.getStartDateTime(),
-                createEventReq.getEndDateTime(),
-                createEventReq.getSuccessForm(),
+                createEventReq.title(),
+                createEventReq.limitCount(),
+                createEventReq.successContent(),
+                createEventReq.successImageUrl(),
+                createEventReq.startDateTime(),
+                createEventReq.endDateTime(),
+                createEventReq.successForm(),
                 memberId);
         return new ResponseEnvelope<>(null);
     }
