@@ -11,6 +11,7 @@ import ddip.me.ddipbe.presentation.dto.response.MemberIdRes;
 import ddip.me.ddipbe.presentation.dto.response.MemberMeRes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,15 +32,15 @@ public class MemberController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("signup")
-    public ResponseEnvelope<MemberIdRes> signup(@RequestBody SignupReq signupRequest) {
-        Member member = memberService.signup(signupRequest.getEmail(), signupRequest.getPassword());
+    public ResponseEnvelope<MemberIdRes> signup(@Valid @RequestBody SignupReq signupRequest) {
+        Member member = memberService.signup(signupRequest.email(), signupRequest.password());
 
         return new ResponseEnvelope<>(new MemberIdRes(member.getId()));
     }
 
     @PostMapping("signin")
-    public ResponseEnvelope<MemberIdRes> signin(@RequestBody SigninReq signinRequest, HttpServletRequest request) {
-        long memberId = memberService.signin(signinRequest.getEmail(), signinRequest.getPassword());
+    public ResponseEnvelope<MemberIdRes> signin(@Valid @RequestBody SigninReq signinRequest, HttpServletRequest request) {
+        long memberId = memberService.signin(signinRequest.email(), signinRequest.password());
         SessionUtil.setMemberId(request.getSession(), memberId);
 
         return new ResponseEnvelope<>(new MemberIdRes(memberId));

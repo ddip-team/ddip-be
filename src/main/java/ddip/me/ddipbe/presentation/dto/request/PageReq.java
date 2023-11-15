@@ -1,15 +1,6 @@
 package ddip.me.ddipbe.presentation.dto.request;
 
-import lombok.Getter;
+import jakarta.validation.constraints.Positive;
 
-@Getter
-public class PageReq {
-
-    private final int page;
-    private final int size;
-
-    public PageReq(int page, int size) {
-        this.page = page;
-        this.size = size;
-    }
+public record PageReq(@Positive int page, @Positive int size) {
 }
