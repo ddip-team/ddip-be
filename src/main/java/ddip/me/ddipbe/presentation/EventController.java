@@ -9,6 +9,7 @@ import ddip.me.ddipbe.presentation.dto.request.CreateEventReq;
 import ddip.me.ddipbe.presentation.dto.request.PageReq;
 import ddip.me.ddipbe.presentation.dto.request.RegisterFormInputValueReq;
 import ddip.me.ddipbe.presentation.dto.response.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -24,17 +25,18 @@ public class EventController {
 
     @PostMapping
     public ResponseEnvelope<EventUUIDRes> createEvent(
-            @RequestBody CreateEventReq createEventReq,
+            @Valid @RequestBody CreateEventReq createEventReq,
             @SessionMemberId Long memberId
     ) {
         Event event = eventService.createEvent(
-                createEventReq.getTitle(),
-                createEventReq.getLimitCount(),
-                createEventReq.getSuccessContent(),
-                createEventReq.getSuccessImageUrl(),
-                createEventReq.getStartDateTime(),
-                createEventReq.getEndDateTime(),
-                createEventReq.getSuccessForm(),
+                createEventReq.title(),
+                createEventReq.limitCount(),
+                createEventReq.successContent(),
+                createEventReq.successImageUrl(),
+                createEventReq.thumbnailImageUrl(),
+                createEventReq.startDateTime(),
+                createEventReq.endDateTime(),
+                createEventReq.successForm(),
                 memberId);
         return new ResponseEnvelope<>(new EventUUIDRes(event.getUuid()));
     }
@@ -48,21 +50,21 @@ public class EventController {
     @GetMapping("me")
     public ResponseEnvelope<PageRes<EventOwnRes>> findOwnEvents(
             @SessionMemberId Long memberId,
-            PageReq pageReq,
+            @Valid PageReq pageReq,
             @RequestParam(required = false) String open
     ) {
         boolean checkOpen = open != null;
-        Page<Event> ownEventPage = eventService.findOwnEvents(memberId, pageReq.getPage(), pageReq.getSize(), checkOpen);
+        Page<Event> ownEventPage = eventService.findOwnEvents(memberId, pageReq.page(), pageReq.size(), checkOpen);
 
         return new ResponseEnvelope<>(new PageRes<>(ownEventPage.map(EventOwnRes::new)));
     }
 
     @GetMapping("{uuid}/success-records")
-    public ResponseEnvelope<PageRes<SuccessRecordRes>> findSuccessRecords(@PathVariable UUID uuid, PageReq pageReq) {
+    public ResponseEnvelope<PageRes<SuccessRecordRes>> findSuccessRecords(@PathVariable UUID uuid, @Valid PageReq pageReq) {
         Page<SuccessRecord> successRecords = eventService.findSuccessRecords(
                 uuid,
-                pageReq.getPage(),
-                pageReq.getSize());
+                pageReq.page(),
+                pageReq.size());
         return new ResponseEnvelope<>(new PageRes<>(successRecords.map(SuccessRecordRes::new)));
     }
 
@@ -109,12 +111,12 @@ public class EventController {
     @PostMapping("{uuid}/form")
     public ResponseEnvelope<?> registerSuccessRecordFormInputValue(
             @PathVariable UUID uuid,
-            @RequestBody RegisterFormInputValueReq registerFormInputValueReq,
+            @Valid @RequestBody RegisterFormInputValueReq registerFormInputValueReq,
             @RequestParam String token
     ) {
         eventService.registerSuccessRecordSuccessInputInfo(
                 uuid,
-                registerFormInputValueReq.getFormInputValue(),
+                registerFormInputValueReq.formInputValue(),
                 token);
         return new ResponseEnvelope<>(null);
     }
