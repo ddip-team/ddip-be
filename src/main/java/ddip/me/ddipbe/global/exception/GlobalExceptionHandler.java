@@ -59,9 +59,6 @@ public class GlobalExceptionHandler {
         };
     }
 
-    private record FieldError(String field, String message) {
-    }
-
     private Object dataForMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         return e.getBindingResult().getFieldErrors().stream()
                 .map(error -> new FieldError(error.getField(), error.getDefaultMessage()))
@@ -72,5 +69,8 @@ public class GlobalExceptionHandler {
         return e.getConstraintViolations().stream()
                 .map(violation -> new FieldError(violation.getPropertyPath().toString(), violation.getMessage()))
                 .toList();
+    }
+
+    private record FieldError(String field, String message) {
     }
 }

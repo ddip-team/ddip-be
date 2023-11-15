@@ -1,7 +1,6 @@
 package ddip.me.ddipbe.global.dto;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 @Getter
 public class ResponseEnvelope<T> {
@@ -13,18 +12,6 @@ public class ResponseEnvelope<T> {
         this.code = null;
         this.data = data;
         this.message = null;
-    }
-
-    public ResponseEnvelope(String code, T data) {
-        this.code = code;
-        this.data = data;
-        this.message = null;
-    }
-
-    public ResponseEnvelope(String code, String message) {
-        this.code = code;
-        this.data = null;
-        this.message = message;
     }
 
     public ResponseEnvelope(String code, T data, String message) {

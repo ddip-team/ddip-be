@@ -1,4 +1,4 @@
-package ddip.me.ddipbe.global.config;
+package ddip.me.ddipbe.global.config.web;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
