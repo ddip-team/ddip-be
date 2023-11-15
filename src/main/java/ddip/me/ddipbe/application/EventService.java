@@ -39,7 +39,7 @@ public class EventService {
                              Long memberId) {
         Member findMember = memberRepository.findById(memberId).orElseThrow(EventNotFoundException::new);
 
-        if (!eventEndTimeIsValidValue(start, end)) {
+        if (!eventDateTimeIsValid(start, end)) {
             throw new EventDateInvalidException();
         }
 
@@ -60,7 +60,7 @@ public class EventService {
         return event;
     }
 
-    private boolean eventEndTimeIsValidValue(ZonedDateTime start, ZonedDateTime end) {
+    private boolean eventDateTimeIsValid(ZonedDateTime start, ZonedDateTime end) {
         return end.isAfter(start) && end.isAfter(ZonedDateTime.now());
     }
 
@@ -90,6 +90,58 @@ public class EventService {
     public Page<SuccessRecord> findSuccessRecords(UUID uuid, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("timestamp").ascending());
         return successRecordRepository.findAllByEventUuid(uuid, pageable);
+    }
+
+    @Transactional
+    public void deleteEvent(UUID uuid, Long memberId) {
+        Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
+
+        if (!event.getMember().getId().equals(memberId)) {
+            throw new NotEventOwnerException();
+        }
+
+        if (event.hasSuccessRecord()) {
+            throw new EventNotDeletableException();
+        }
+
+        eventRepository.delete(event);
+    }
+
+    @Transactional
+    public void updateEvent(
+            UUID uuid,
+            String title,
+            Integer limitCount,
+            String successContent,
+            String successImageUrl,
+            ZonedDateTime startDateTime,
+            ZonedDateTime endDateTime,
+            Map<String, Object> successForm,
+            Long memberId
+    ) {
+        Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
+
+        if (!event.getMember().getId().equals(memberId)) {
+            throw new NotEventOwnerException();
+        }
+
+        if (event.hasSuccessRecord() || event.started()) {
+            throw new EventNotEditableException();
+        }
+
+        if (!eventDateTimeIsValid(startDateTime, endDateTime)) {
+            throw new EventDateInvalidException();
+        }
+
+        event.update(
+                title,
+                limitCount,
+                successContent,
+                successImageUrl,
+                startDateTime,
+                endDateTime,
+                successForm
+        );
     }
 
     @Transactional
