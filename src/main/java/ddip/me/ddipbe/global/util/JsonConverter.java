@@ -1,23 +1,21 @@
 package ddip.me.ddipbe.global.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import ddip.me.ddipbe.application.exception.EventJsonStringNullException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 @Converter
-public class JsonConverter implements AttributeConverter<Map<String,String>,String> {
+public class JsonConverter implements AttributeConverter<Map<String, Object>, String> {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public String convertToDatabaseColumn(Map<String, String> attribute) {
+    public String convertToDatabaseColumn(Map<String, Object> attribute) {
         try {
             return objectMapper.writeValueAsString(attribute);
         } catch (JsonProcessingException e) {
@@ -26,10 +24,12 @@ public class JsonConverter implements AttributeConverter<Map<String,String>,Stri
     }
 
     @Override
-    public Map<String, String> convertToEntityAttribute(String successFormat) {
+    public Map<String, Object> convertToEntityAttribute(String jsonString) {
+        if (jsonString == null) return null;
+
         try {
-            if (successFormat == null) return new HashMap<String, String>();
-            return objectMapper.readValue(successFormat, new TypeReference<Map<String, String>>(){});
+            return objectMapper.readValue(jsonString, new TypeReference<>() {
+            });
         } catch (IOException e) {
             throw new RuntimeException("Error converting JSON to Map", e);
         }

@@ -1,7 +1,6 @@
 package ddip.me.ddipbe.domain;
 
 import ddip.me.ddipbe.global.util.JsonConverter;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -42,7 +41,11 @@ public class Event {
 
     private ZonedDateTime endDateTime;
 
-    private ZonedDateTime createdAt;
+    private ZonedDateTime createdAt;    // TODO: 정확하지 않은 생성 시간 보완
+
+    @Column(columnDefinition = "json")
+    @Convert(converter = JsonConverter.class)
+    private Map<String, Object> successForm;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
     private List<SuccessRecord> successRecords = new ArrayList<>();
@@ -50,11 +53,6 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
-    @Column(columnDefinition = "json")
-    @Convert(converter = JsonConverter.class)
-    @Nullable
-    private Map<String, String> successInputInfo;
 
     public Event(UUID uuid,
                  String title,
@@ -64,6 +62,7 @@ public class Event {
                  String thumbnailImageUrl,
                  ZonedDateTime startDateTime,
                  ZonedDateTime endDateTime,
+                 Map<String, Object> successForm,
                  Member member) {
         this.uuid = uuid;
         this.title = title;
@@ -74,8 +73,9 @@ public class Event {
         this.thumbnailImageUrl = thumbnailImageUrl;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
-        this.member = member;
         this.createdAt = ZonedDateTime.now();
+        this.successForm = successForm;
+        this.member = member;
     }
 
     public boolean isOpen(ZonedDateTime now) {
@@ -90,7 +90,7 @@ public class Event {
         return true;
     }
 
-    public void addPermit(SuccessRecord successRecord) {
+    public void addSuccessRecord(SuccessRecord successRecord) {
         successRecords.add(successRecord);
     }
 }

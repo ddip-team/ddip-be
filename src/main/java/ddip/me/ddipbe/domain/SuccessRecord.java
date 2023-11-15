@@ -1,15 +1,17 @@
 package ddip.me.ddipbe.domain;
 
 import ddip.me.ddipbe.global.util.JsonConverter;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class SuccessRecord {
@@ -26,8 +28,7 @@ public class SuccessRecord {
 
     @Column(columnDefinition = "json")
     @Convert(converter = JsonConverter.class)
-    @Nullable
-    private Map<String, String> successInputInfo;
+    private Map<String, Object> formInputValue;
 
     private ZonedDateTime timestamp;
 
@@ -37,7 +38,11 @@ public class SuccessRecord {
         this.timestamp = timestamp;
     }
 
-    public void updateSuccessInputInfo(Map<String, String> successInputInfo){
-        this.successInputInfo = successInputInfo;
+    public boolean registerFormInputValue(Map<String, Object> formInputValue) {
+        if (this.formInputValue == null) {
+            this.formInputValue = formInputValue;
+            return true;
+        }
+        return false;
     }
 }
