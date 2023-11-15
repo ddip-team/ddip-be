@@ -93,4 +93,31 @@ public class Event {
     public void addSuccessRecord(SuccessRecord successRecord) {
         successRecords.add(successRecord);
     }
+
+    public boolean hasSuccessRecord() {
+        return !successRecords.isEmpty();
+    }
+
+    public boolean ended() {
+        return endDateTime.isBefore(ZonedDateTime.now());
+    }
+
+    public void update(
+            String title,
+            Integer limitCount,
+            String successContent,
+            String successImageUrl,
+            ZonedDateTime startDateTime,
+            ZonedDateTime endDateTime,
+            Map<String, Object> successForm
+    ) {
+        this.title = title;
+        this.limitCount = limitCount;
+        this.remainCount = limitCount;
+        this.successContent = successContent;
+        this.successImageUrl = successImageUrl;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.successForm = successForm;
+    }
 }

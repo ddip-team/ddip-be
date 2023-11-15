@@ -66,6 +66,25 @@ public class EventController {
         return new ResponseEnvelope<>(new PageRes<>(successRecords.map(SuccessRecordRes::new)));
     }
 
+    @PutMapping("{uuid}")
+    public ResponseEnvelope<?> updateEvent(
+            @PathVariable UUID uuid,
+            @RequestBody CreateEventReq createEventReq,
+            @SessionMemberId Long memberId
+    ) {
+        eventService.updateEvent(
+                uuid,
+                createEventReq.getTitle(),
+                createEventReq.getLimitCount(),
+                createEventReq.getSuccessContent(),
+                createEventReq.getSuccessImageUrl(),
+                createEventReq.getStartDateTime(),
+                createEventReq.getEndDateTime(),
+                createEventReq.getSuccessForm(),
+                memberId);
+        return new ResponseEnvelope<>(null);
+    }
+
     @PostMapping("{uuid}/apply")
     public ResponseEnvelope<?> applyEvent(@PathVariable UUID uuid, @RequestParam String token) {
         eventService.applyEvent(uuid, token);
