@@ -1,5 +1,7 @@
 package ddip.me.ddipbe.domain;
 
+import ddip.me.ddipbe.global.util.JsonConverter;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -41,6 +44,11 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @Column(columnDefinition = "json")
+    @Convert(converter = JsonConverter.class)
+    @Nullable
+    private Map<String, String> successInputInfo;
 
     public Event(UUID uuid, String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime, Member member) {
         this.uuid = uuid;

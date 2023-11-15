@@ -9,11 +9,16 @@ import ddip.me.ddipbe.domain.repository.MemberRepository;
 import ddip.me.ddipbe.domain.repository.PermitRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
@@ -87,11 +92,29 @@ public class EventService {
             throw new EventCapacityFullException();
         }
 
-        event.addPermit(new SuccessRecord(token, event));
+        event.addPermit(new SuccessRecord(token, event,ZonedDateTime.now()));
     }
 
     public Event findSuccessEvent(UUID uuid, String token) {
         SuccessRecord successRecord = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
         return successRecord.getEvent();
+    }
+
+    public SuccessRecord findEventSuccessJsonString(UUID uuid, String token){
+        return permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
+    }
+
+    @Transactional
+    public SuccessRecord updateSuccessRecordSuccessInputInfo(UUID uuid, Map<String,String> successInputInfo, String token){
+        SuccessRecord successRecord = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
+        if (Optional.ofNullable(successRecord.getSuccessInputInfo()).isEmpty()){
+            successRecord.updateSuccessInputInfo(successInputInfo);
+        }
+        return successRecord;
+    }
+
+    public List<SuccessRecord> findSuccessRecords(UUID uuid, int pageIndex, int pageSize, String sortProperty){
+        Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by(sortProperty).ascending());
+        return permitRepository.findByEventUuid(uuid, pageable);
     }
 }
