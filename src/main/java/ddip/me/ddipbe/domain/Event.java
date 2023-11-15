@@ -1,7 +1,6 @@
 package ddip.me.ddipbe.domain;
 
 import ddip.me.ddipbe.global.util.JsonConverter;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,9 +33,19 @@ public class Event {
 
     private String successContent;
 
+    private String successImageUrl;
+
+    private String thumbnailImageUrl;
+
     private ZonedDateTime startDateTime;
 
     private ZonedDateTime endDateTime;
+
+    private ZonedDateTime createdAt;    // TODO: 정확하지 않은 생성 시간 보완
+
+    @Column(columnDefinition = "json")
+    @Convert(converter = JsonConverter.class)
+    private Map<String, Object> successForm;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
     private List<SuccessRecord> successRecords = new ArrayList<>();
@@ -45,19 +54,27 @@ public class Event {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(columnDefinition = "json")
-    @Convert(converter = JsonConverter.class)
-    @Nullable
-    private Map<String, String> successInputInfo;
-
-    public Event(UUID uuid, String title, Integer limitCount, String successContent, ZonedDateTime startDateTime, ZonedDateTime endDateTime, Member member) {
+    public Event(UUID uuid,
+                 String title,
+                 Integer limitCount,
+                 String successContent,
+                 String successImageUrl,
+                 String thumbnailImageUrl,
+                 ZonedDateTime startDateTime,
+                 ZonedDateTime endDateTime,
+                 Map<String, Object> successForm,
+                 Member member) {
         this.uuid = uuid;
         this.title = title;
         this.limitCount = limitCount;
         this.remainCount = limitCount;
         this.successContent = successContent;
+        this.successImageUrl = successImageUrl;
+        this.thumbnailImageUrl = thumbnailImageUrl;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
+        this.createdAt = ZonedDateTime.now();
+        this.successForm = successForm;
         this.member = member;
     }
 
@@ -73,7 +90,7 @@ public class Event {
         return true;
     }
 
-    public void addPermit(SuccessRecord successRecord) {
+    public void addSuccessRecord(SuccessRecord successRecord) {
         successRecords.add(successRecord);
     }
 }

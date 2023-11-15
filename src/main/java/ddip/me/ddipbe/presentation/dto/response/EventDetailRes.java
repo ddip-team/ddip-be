@@ -12,17 +12,19 @@ public class EventDetailRes {
     private final String title;
     private final UUID uuid;
     private final Integer limitCount;
+    private final String thumbnailImageUrl;
     private final ZonedDateTime startDateTime;
     private final ZonedDateTime endDateTime;
-    private final Long memberId;
+    private final MemberRes member;
 
     public EventDetailRes(Event event) {
         this.title = event.getTitle();
         this.uuid = event.getUuid();
         this.limitCount = event.getLimitCount();
+        this.thumbnailImageUrl = event.getThumbnailImageUrl();
         this.startDateTime = event.getStartDateTime();
         this.endDateTime = event.getEndDateTime();
-        this.memberId = event.getMember().getId();
+        this.member = new MemberRes(event.getMember());
     }
 }
 

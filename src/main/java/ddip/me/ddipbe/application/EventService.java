@@ -6,9 +6,9 @@ import ddip.me.ddipbe.domain.Member;
 import ddip.me.ddipbe.domain.SuccessRecord;
 import ddip.me.ddipbe.domain.repository.EventRepository;
 import ddip.me.ddipbe.domain.repository.MemberRepository;
-import ddip.me.ddipbe.domain.repository.PermitRepository;
+import ddip.me.ddipbe.domain.repository.SuccessRecordRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -16,26 +16,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
-@Log4j2
 @Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class EventService {
 
     private final EventRepository eventRepository;
-    private final PermitRepository permitRepository;
-
-    private final MemberRepository memberRepository; // TODO - MemberServiceLayer에서 호출로 추후 리팩터링
+    private final SuccessRecordRepository successRecordRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public Event createEvent(String title, Integer permitCount, String content, ZonedDateTime start, ZonedDateTime end, Long memberId) {
-        Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
+    public Event createEvent(String title,
+                             Integer permitCount,
+                             String successContent,
+                             String successImageUrl,
+                             ZonedDateTime start,
+                             ZonedDateTime end,
+                             Map<String, Object> successForm,
+                             Long memberId) {
+        Member findMember = memberRepository.findById(memberId).orElseThrow(EventNotFoundException::new);
 
         if (!eventEndTimeIsValidValue(start, end)) {
             throw new EventDateInvalidException();
@@ -45,9 +47,12 @@ public class EventService {
                 UUID.randomUUID(),
                 title,
                 permitCount,
-                content,
+                successContent,
+                successImageUrl,
+                successImageUrl,
                 start,
                 end,
+                successForm,
                 findMember
         );
         event = eventRepository.save(event);
@@ -55,35 +60,47 @@ public class EventService {
         return event;
     }
 
-    public Event findEventByUuid(UUID uuid) {
-        return eventRepository.findByUuid(uuid)
-                .orElseThrow(() -> new EventNotFoundException("DB에서 UUID를 찾을 수 없습니다."));
-    }
-
-    public List<Event> findOwnEvent(Long memberId, boolean filterOpen) {
-        Member foundMember = memberRepository.findById(memberId).orElseThrow(() -> new EventNotFoundException("ID가 존재하지 않습니다"));
-        if (filterOpen) {
-            ZonedDateTime now = ZonedDateTime.now();
-            return eventRepository.findAllByStartDateTimeBeforeAndEndDateTimeAfter(now, now);
-        }
-        return eventRepository.findAllByMember(foundMember);
-    }
-
     private boolean eventEndTimeIsValidValue(ZonedDateTime start, ZonedDateTime end) {
         return end.isAfter(start) && end.isAfter(ZonedDateTime.now());
     }
 
+    public Event findEventByUuid(UUID uuid) {
+        return eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
+    }
+
+    public Page<Event> findOwnEvents(Long memberId, int page, int size, boolean filterOpen) {
+        Member foundMember = memberRepository.findById(memberId).orElseThrow(EventNotFoundException::new);
+
+        if (filterOpen) {
+            ZonedDateTime now = ZonedDateTime.now();
+            return eventRepository.findAllByMemberAndStartDateTimeBeforeAndEndDateTimeAfter(
+                    foundMember,
+                    now,
+                    now,
+                    PageRequest.of(page - 1, size, Sort.by("createdAt").descending())
+            );
+        } else {
+            return eventRepository.findAllByMember(
+                    foundMember,
+                    PageRequest.of(page - 1, size, Sort.by("createdAt").descending())
+            );
+        }
+    }
+
+    public Page<SuccessRecord> findSuccessRecords(UUID uuid, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("timestamp").ascending());
+        return successRecordRepository.findAllByEventUuid(uuid, pageable);
+    }
+
     @Transactional
     public void applyEvent(UUID uuid, String token) {
-        Event event = eventRepository.findByUuidForUpdate(uuid)
-                .orElseThrow(() -> new EventNotFoundException("DB에서 UUID를 찾을 수 없습니다."));
+        Event event = eventRepository.findByUuidForUpdate(uuid).orElseThrow(EventNotFoundException::new);
 
-        ZonedDateTime now = ZonedDateTime.now();
-        if (!event.isOpen(now)) {
+        if (!event.isOpen(ZonedDateTime.now())) {
             throw new EventNotOpenException();
         }
 
-        if (permitRepository.existsByEventUuidAndToken(uuid, token)) {
+        if (successRecordRepository.existsByEventUuidAndToken(uuid, token)) {
             throw new EventAlreadyAppliedException();
         }
 
@@ -92,29 +109,26 @@ public class EventService {
             throw new EventCapacityFullException();
         }
 
-        event.addPermit(new SuccessRecord(token, event,ZonedDateTime.now()));
+        event.addSuccessRecord(new SuccessRecord(token, event, ZonedDateTime.now()));
     }
 
     public Event findSuccessEvent(UUID uuid, String token) {
-        SuccessRecord successRecord = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
+        SuccessRecord successRecord = successRecordRepository.findByEventUuidAndToken(uuid, token)
+                .orElseThrow(SuccessRecordNotFoundException::new);
         return successRecord.getEvent();
     }
 
-    public SuccessRecord findEventSuccessJsonString(UUID uuid, String token){
-        return permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
+    public SuccessRecord findSuccessRecord(UUID uuid, String token) {
+        return successRecordRepository.findByEventUuidAndToken(uuid, token)
+                .orElseThrow(SuccessRecordNotFoundException::new);
     }
 
     @Transactional
-    public SuccessRecord updateSuccessRecordSuccessInputInfo(UUID uuid, Map<String,String> successInputInfo, String token){
-        SuccessRecord successRecord = permitRepository.findByEventUuidAndToken(uuid, token).orElseThrow(PermitNotFoundException::new);
-        if (Optional.ofNullable(successRecord.getSuccessInputInfo()).isEmpty()){
-            successRecord.updateSuccessInputInfo(successInputInfo);
+    public void registerSuccessRecordSuccessInputInfo(UUID uuid, Map<String, Object> formInputValue, String token) {
+        SuccessRecord successRecord = successRecordRepository.findByEventUuidAndToken(uuid, token)
+                .orElseThrow(SuccessRecordNotFoundException::new);
+        if (!successRecord.registerFormInputValue(formInputValue)) {
+            throw new SuccessFormAlreadyRegisteredException();
         }
-        return successRecord;
-    }
-
-    public List<SuccessRecord> findSuccessRecords(UUID uuid, int pageIndex, int pageSize, String sortProperty){
-        Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by(sortProperty).ascending());
-        return permitRepository.findByEventUuid(uuid, pageable);
     }
 }
