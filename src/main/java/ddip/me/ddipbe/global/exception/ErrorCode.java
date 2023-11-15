@@ -32,6 +32,9 @@ public enum ErrorCode {
     EVENT_NOT_OPEN(HttpStatus.BAD_REQUEST, "이벤트 기간이 아닙니다.", Set.of(EventNotOpenException.class)),
     SUCCESS_FORM_ALREADY_REGISTERED(HttpStatus.BAD_REQUEST, "이미 폼이 등록되었습니다.", Set.of(SuccessFormAlreadyRegisteredException.class)),
     SUCCESS_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "이벤트 성공 기록이 존재하지 않습니다.", Set.of(SuccessRecordNotFoundException.class)),
+    EVENT_NOT_EDITABLE(HttpStatus.BAD_REQUEST, "이벤트 수정이 불가능합니다.", Set.of(EventNotEditableException.class)),
+    EVENT_NOT_DELETABLE(HttpStatus.BAD_REQUEST, "이벤트 삭제가 불가능합니다.", Set.of(EventNotDeletableException.class)),
+    NOT_EVENT_OWNER(HttpStatus.BAD_REQUEST, "이벤트 주최자가 아닙니다.", Set.of(NotEventOwnerException.class)),
     ;
 
     private final HttpStatusCode status;
