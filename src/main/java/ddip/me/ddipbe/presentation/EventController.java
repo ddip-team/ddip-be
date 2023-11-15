@@ -66,6 +66,12 @@ public class EventController {
         return new ResponseEnvelope<>(new PageRes<>(successRecords.map(SuccessRecordRes::new)));
     }
 
+    @DeleteMapping("{uuid}")
+    public ResponseEnvelope<?> deleteEvent(@PathVariable UUID uuid, @SessionMemberId Long memberId) {
+        eventService.deleteEvent(uuid, memberId);
+        return new ResponseEnvelope<>(null);
+    }
+
     @PutMapping("{uuid}")
     public ResponseEnvelope<?> updateEvent(
             @PathVariable UUID uuid,

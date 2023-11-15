@@ -93,6 +93,21 @@ public class EventService {
     }
 
     @Transactional
+    public void deleteEvent(UUID uuid, Long memberId) {
+        Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
+
+        if (!event.getMember().getId().equals(memberId)) {
+            throw new NotEventOwnerException();
+        }
+
+        if (event.hasSuccessRecord()) {
+            throw new EventNotDeletableException();
+        }
+
+        eventRepository.delete(event);
+    }
+
+    @Transactional
     public void updateEvent(
             UUID uuid,
             String title,
