@@ -125,7 +125,7 @@ public class EventService {
             throw new NotEventOwnerException();
         }
 
-        if (event.hasSuccessRecord() || event.ended()) {
+        if (event.hasSuccessRecord() || event.started()) {
             throw new EventNotEditableException();
         }
 

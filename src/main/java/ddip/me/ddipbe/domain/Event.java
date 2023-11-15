@@ -98,8 +98,8 @@ public class Event {
         return !successRecords.isEmpty();
     }
 
-    public boolean ended() {
-        return endDateTime.isBefore(ZonedDateTime.now());
+    public boolean started() {
+        return startDateTime.isBefore(ZonedDateTime.now());
     }
 
     public void update(
