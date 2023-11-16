@@ -24,6 +24,6 @@ public class PresignedController {
         List<PresignedUrl> presignedUrls = fileNames.stream()
                 .map(fileName -> presignedService.getPresignedUrl(fileName, type))
                 .toList();
-        return new ResponseEnvelope<>(presignedUrls);
+        return ResponseEnvelope.of(presignedUrls);
     }
 }

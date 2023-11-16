@@ -36,14 +36,14 @@ public class GlobalExceptionHandler {
         if (exceptionMap.containsKey(e.getClass())) {
             ErrorCode errorCode = exceptionMap.get(e.getClass());
             Object data = parseErrorData(e);
-            ResponseEnvelope<?> res = new ResponseEnvelope<>(errorCode.getCode(), data, errorCode.getMessage());
+            ResponseEnvelope<?> res = ResponseEnvelope.of(errorCode.getCode(), data, errorCode.getMessage());
             return ResponseEntity.status(errorCode.getStatus()).body(res);
         }
 
         // 예상 못한 에러
         log.error("Unexpected error occurred", e);
         return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
-                .body(new ResponseEnvelope<>(
+                .body(ResponseEnvelope.of(
                         ErrorCode.INTERNAL_SERVER_ERROR.getCode(),
                         null,
                         ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
