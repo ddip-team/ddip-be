@@ -1,4 +1,4 @@
-package ddip.me.ddipbe.application.exception;
+package ddip.me.ddipbe.domain.exception;
 
 public class EventAlreadyAppliedException extends RuntimeException {
 }

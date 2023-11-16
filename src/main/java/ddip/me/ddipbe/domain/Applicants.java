@@ -1,5 +1,6 @@
 package ddip.me.ddipbe.domain;
 
+import ddip.me.ddipbe.domain.exception.EventCapacityFullException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.OneToMany;
@@ -27,19 +28,15 @@ public class Applicants {
         this.remainCount = limitCount;
     }
 
-    public boolean decreaseRemainCount() {
+    public void addSuccessRecord(SuccessRecord successRecord) {
         if (remainCount == 0) {
-            return false;
+            throw new EventCapacityFullException();
         }
         remainCount--;
-        return true;
-    }
-
-    public void addSuccessRecord(SuccessRecord successRecord) {
         successRecords.add(successRecord);
     }
 
-    public boolean hasSuccessRecord() {
+    public boolean exists() {
         return !successRecords.isEmpty();
     }
 }

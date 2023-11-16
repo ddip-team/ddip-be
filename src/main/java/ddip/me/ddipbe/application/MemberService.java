@@ -1,9 +1,9 @@
 package ddip.me.ddipbe.application;
 
-import ddip.me.ddipbe.application.exception.AlreadySignedUpException;
-import ddip.me.ddipbe.application.exception.InvalidPasswordException;
-import ddip.me.ddipbe.application.exception.MemberNotFoundException;
 import ddip.me.ddipbe.domain.Member;
+import ddip.me.ddipbe.domain.exception.AlreadySignedUpException;
+import ddip.me.ddipbe.domain.exception.InvalidPasswordException;
+import ddip.me.ddipbe.domain.exception.MemberNotFoundException;
 import ddip.me.ddipbe.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

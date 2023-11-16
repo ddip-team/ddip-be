@@ -1,6 +1,6 @@
 package ddip.me.ddipbe.global.exception;
 
-import ddip.me.ddipbe.application.exception.*;
+import ddip.me.ddipbe.domain.exception.*;
 import jakarta.validation.ConstraintViolationException;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

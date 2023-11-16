@@ -68,4 +68,20 @@ public class Event extends BaseTimeEntity {
         this.successResult = new SuccessResult(successContent, successImageUrl, successForm);
         this.eventDuration = new EventDuration(startDateTime, endDateTime);
     }
+
+    public void apply(SuccessRecord successRecord) {
+        applicants.addSuccessRecord(successRecord);
+    }
+
+    public boolean isOwnedBy(long memberId) {
+        return this.member.getId().equals(memberId);
+    }
+
+    public boolean isEditable() {
+        return applicants.exists() || eventDuration.started();
+    }
+
+    public boolean isDeletable() {
+        return applicants.exists();
+    }
 }

@@ -1,16 +1,15 @@
 package ddip.me.ddipbe.application;
 
-import ddip.me.ddipbe.application.exception.*;
 import ddip.me.ddipbe.domain.Event;
 import ddip.me.ddipbe.domain.EventDuration;
 import ddip.me.ddipbe.domain.Member;
 import ddip.me.ddipbe.domain.SuccessRecord;
+import ddip.me.ddipbe.domain.exception.*;
 import ddip.me.ddipbe.domain.repository.EventRepository;
 import ddip.me.ddipbe.domain.repository.SuccessRecordRepository;
+import ddip.me.ddipbe.global.dto.CustomPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,12 +70,12 @@ public class EventService {
             return eventRepository.findAllByMemberAndOpen(
                     foundMember,
                     ZonedDateTime.now(),
-                    PageRequest.of(page - 1, size, Sort.by("createdAt").descending())
+                    CustomPageable.of(page, size, Sort.by("createdAt").descending())
             );
         } else {
             return eventRepository.findAllByMember(
                     foundMember,
-                    PageRequest.of(page - 1, size, Sort.by("createdAt").descending())
+                    CustomPageable.of(page, size, Sort.by("createdAt").descending())
             );
         }
     }
@@ -84,23 +83,25 @@ public class EventService {
     public Page<SuccessRecord> findSuccessRecords(long memberId, UUID uuid, int page, int size) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
-        if (!event.getMember().getId().equals(memberId)) {
+        if (!event.isOwnedBy(memberId)) {
             throw new NotEventOwnerException();
         }
 
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").ascending());
-        return successRecordRepository.findAllByEventUuid(uuid, pageable);
+        return successRecordRepository.findAllByEventUuid(
+                uuid,
+                CustomPageable.of(page, size, Sort.by("createdAt").ascending())
+        );
     }
 
     @Transactional
     public void deleteEvent(UUID uuid, Long memberId) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
-        if (!event.getMember().getId().equals(memberId)) {
+        if (!event.isOwnedBy(memberId)) {
             throw new NotEventOwnerException();
         }
 
-        if (event.getApplicants().hasSuccessRecord()) {
+        if (!event.isDeletable()) {
             throw new EventNotDeletableException();
         }
 
@@ -121,11 +122,11 @@ public class EventService {
     ) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
-        if (!event.getMember().getId().equals(memberId)) {
+        if (!event.isOwnedBy(memberId)) {
             throw new NotEventOwnerException();
         }
 
-        if (event.getApplicants().hasSuccessRecord() || event.getEventDuration().started()) {
+        if (!event.isEditable()) {
             throw new EventNotEditableException();
         }
 
@@ -156,12 +157,7 @@ public class EventService {
             throw new EventAlreadyAppliedException();
         }
 
-        boolean success = event.getApplicants().decreaseRemainCount();
-        if (!success) {
-            throw new EventCapacityFullException();
-        }
-
-        event.getApplicants().addSuccessRecord(new SuccessRecord(token, event));
+        event.apply(new SuccessRecord(token, event));
     }
 
     public Event findSuccessEvent(UUID uuid, String token) {
@@ -179,8 +175,7 @@ public class EventService {
     public void registerSuccessRecordSuccessInputInfo(UUID uuid, Map<String, Object> formInputValue, String token) {
         SuccessRecord successRecord = successRecordRepository.findByEventUuidAndToken(uuid, token)
                 .orElseThrow(SuccessRecordNotFoundException::new);
-        if (!successRecord.registerFormInputValue(formInputValue)) {
-            throw new SuccessFormAlreadyRegisteredException();
-        }
+
+        successRecord.registerFormInputValue(formInputValue);
     }
 }

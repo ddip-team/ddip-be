@@ -1,5 +1,6 @@
 package ddip.me.ddipbe.domain;
 
+import ddip.me.ddipbe.domain.exception.SuccessFormAlreadyRegisteredException;
 import ddip.me.ddipbe.global.entity.BaseTimeEntity;
 import ddip.me.ddipbe.global.util.JsonConverter;
 import jakarta.persistence.*;
@@ -35,11 +36,10 @@ public class SuccessRecord extends BaseTimeEntity {
         this.event = event;
     }
 
-    public boolean registerFormInputValue(Map<String, Object> formInputValue) {
-        if (this.formInputValue == null) {
-            this.formInputValue = formInputValue;
-            return true;
+    public void registerFormInputValue(Map<String, Object> formInputValue) {
+        if (this.formInputValue != null) {
+            throw new SuccessFormAlreadyRegisteredException();
         }
-        return false;
+        this.formInputValue = formInputValue;
     }
 }
