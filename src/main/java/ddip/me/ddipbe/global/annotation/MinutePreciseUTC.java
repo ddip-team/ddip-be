@@ -1,6 +1,6 @@
 package ddip.me.ddipbe.global.annotation;
 
-import ddip.me.ddipbe.global.validator.MinutePreciseUTCValidator;
+import ddip.me.ddipbe.global.annotation.validator.MinutePreciseUTCValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
