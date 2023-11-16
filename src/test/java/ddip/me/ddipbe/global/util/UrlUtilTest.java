@@ -24,6 +24,7 @@ class UrlUtilTest {
         assertThat(url).isEqualTo("http://localhost:8080/api");
     }
 
+    @DisplayName("마지막 파라미터의 trailing '/'를 제거하지 않는다.")
     @Test
     void joinLeavesLastPathTrailingSlash() {
         // given
@@ -37,6 +38,7 @@ class UrlUtilTest {
         assertThat(url).isEqualTo("http://localhost:8080/api/");
     }
 
+    @DisplayName("첫 번째 파라미터의 leading '/'를 제거하지 않는다.")
     @Test
     void joinLeavesFirstPathLeadingSlash() {
         // given
