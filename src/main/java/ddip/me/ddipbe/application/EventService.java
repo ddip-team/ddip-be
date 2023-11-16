@@ -89,7 +89,7 @@ public class EventService {
     }
 
     public Page<SuccessRecord> findSuccessRecords(UUID uuid, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("timestamp").ascending());
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").ascending());
         return successRecordRepository.findAllByEventUuid(uuid, pageable);
     }
 

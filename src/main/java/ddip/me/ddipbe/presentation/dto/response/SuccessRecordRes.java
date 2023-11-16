@@ -4,10 +4,10 @@ import ddip.me.ddipbe.domain.SuccessRecord;
 
 import java.time.ZonedDateTime;
 
-public record SuccessRecordRes(String token, ZonedDateTime timestamp, boolean isFormInputValueRegistered) {
+public record SuccessRecordRes(String token, ZonedDateTime createdAt, boolean isFormInputValueRegistered) {
     public SuccessRecordRes(SuccessRecord successRecord) {
         this(successRecord.getToken(),
-                successRecord.getTimestamp(),
+                successRecord.getCreatedAt(),
                 successRecord.getFormInputValue() != null
         );
     }

@@ -1,6 +1,7 @@
 package ddip.me.ddipbe.domain;
 
 import ddip.me.ddipbe.global.util.JsonConverter;
+import ddip.me.ddipbe.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Event {
+public class Event extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +42,6 @@ public class Event {
 
     private ZonedDateTime endDateTime;
 
-    private ZonedDateTime createdAt;    // TODO: 정확하지 않은 생성 시간 보완
 
     @Column(columnDefinition = "json")
     @Convert(converter = JsonConverter.class)
@@ -73,7 +73,6 @@ public class Event {
         this.thumbnailImageUrl = thumbnailImageUrl;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
-        this.createdAt = ZonedDateTime.now();
         this.successForm = successForm;
         this.member = member;
     }
