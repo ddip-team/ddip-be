@@ -34,13 +34,13 @@ public class MemberService {
         return member;
     }
 
-    public long signin(String email, String password) {
+    public Member signin(String email, String password) {
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new InvalidPasswordException();
         }
 
-        return member.getId();
+        return member;
     }
 }

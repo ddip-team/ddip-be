@@ -18,10 +18,10 @@ public record EventDetailRes(
     public EventDetailRes(Event event) {
         this(event.getTitle(),
                 event.getUuid(),
-                event.getLimitCount(),
+                event.getApplicants().getLimitCount(),
                 event.getThumbnailImageUrl(),
-                event.getStartDateTime(),
-                event.getEndDateTime(),
+                event.getEventDuration().getStartDateTime(),
+                event.getEventDuration().getEndDateTime(),
                 new MemberRes(event.getMember())
         );
     }

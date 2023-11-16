@@ -40,10 +40,10 @@ public class MemberController {
 
     @PostMapping("signin")
     public ResponseEnvelope<MemberIdRes> signin(@Valid @RequestBody SigninReq signinRequest, HttpServletRequest request) {
-        long memberId = memberService.signin(signinRequest.email(), signinRequest.password());
-        SessionUtil.setMemberId(request.getSession(), memberId);
+        Member member = memberService.signin(signinRequest.email(), signinRequest.password());
+        SessionUtil.setMemberId(request.getSession(), member.getId());
 
-        return ResponseEnvelope.of(new MemberIdRes(memberId));
+        return ResponseEnvelope.of(new MemberIdRes(member.getId()));
     }
 
     @PostMapping("signout")

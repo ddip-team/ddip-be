@@ -6,6 +6,8 @@ import java.util.Map;
 
 public record EventSuccessRes(String successContent, String successImageUrl, Map<String, Object> successForm) {
     public EventSuccessRes(Event event) {
-        this(event.getSuccessContent(), event.getSuccessImageUrl(), event.getSuccessForm());
+        this(event.getSuccessResult().getSuccessContent(),
+                event.getSuccessResult().getSuccessImageUrl(),
+                event.getSuccessResult().getSuccessForm());
     }
 }
