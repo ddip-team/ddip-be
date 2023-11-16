@@ -1,5 +1,7 @@
 package ddip.me.ddipbe.application.model;
 
+import ddip.me.ddipbe.global.util.UrlUtil;
+
 public enum UploadType {
     EVENT_THUMBNAIL("eventThumbnails"),
     EVENT_SUCCESS_IMAGE("eventSuccessImages"),
@@ -12,6 +14,6 @@ public enum UploadType {
     }
 
     public String toFileKey(String fileName) {
-        return "data/" + this.keyPrefix + "/" + fileName;
+        return UrlUtil.join("data", this.keyPrefix, fileName);
     }
 }
