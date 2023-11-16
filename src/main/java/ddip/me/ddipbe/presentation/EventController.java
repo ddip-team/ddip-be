@@ -62,8 +62,13 @@ public class EventController {
     }
 
     @GetMapping("{uuid}/success-records")
-    public ResponseEnvelope<PageRes<SuccessRecordRes>> findSuccessRecords(@PathVariable UUID uuid, @Valid PageReq pageReq) {
+    public ResponseEnvelope<PageRes<SuccessRecordRes>> findSuccessRecords(
+            @SessionMemberId Long memberId,
+            @PathVariable UUID uuid,
+            @Valid PageReq pageReq
+    ) {
         Page<SuccessRecord> successRecords = eventService.findSuccessRecords(
+                memberId,
                 uuid,
                 pageReq.page(),
                 pageReq.size());

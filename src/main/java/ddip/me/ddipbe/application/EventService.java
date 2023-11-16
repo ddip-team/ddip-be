@@ -81,7 +81,13 @@ public class EventService {
         }
     }
 
-    public Page<SuccessRecord> findSuccessRecords(UUID uuid, int page, int size) {
+    public Page<SuccessRecord> findSuccessRecords(long memberId, UUID uuid, int page, int size) {
+        Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
+
+        if (!event.getMember().getId().equals(memberId)) {
+            throw new NotEventOwnerException();
+        }
+
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").ascending());
         return successRecordRepository.findAllByEventUuid(uuid, pageable);
     }
