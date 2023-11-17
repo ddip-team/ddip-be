@@ -1,6 +1,6 @@
 package ddip.me.ddipbe.domain;
 
-import ddip.me.ddipbe.global.util.JsonConverter;
+import ddip.me.ddipbe.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,16 +8,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Event {
+public class Event extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,35 +25,19 @@ public class Event {
 
     private String title;
 
-    private Integer limitCount;
-
-    private Integer remainCount;
-
-    private String successContent;
-
-    private String successImageUrl;
-
     private String thumbnailImageUrl;
 
-    private ZonedDateTime startDateTime;
+    private Applicants applicants;
 
-    private ZonedDateTime endDateTime;
+    private SuccessResult successResult;
 
-    private ZonedDateTime createdAt;    // TODO: 정확하지 않은 생성 시간 보완
+    private EventDuration eventDuration;
 
-    @Column(columnDefinition = "json")
-    @Convert(converter = JsonConverter.class)
-    private Map<String, Object> successForm;
-
-    @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)
-    private List<SuccessRecord> successRecords = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Event(UUID uuid,
-                 String title,
+    public Event(String title,
                  Integer limitCount,
                  String successContent,
                  String successImageUrl,
@@ -64,42 +46,13 @@ public class Event {
                  ZonedDateTime endDateTime,
                  Map<String, Object> successForm,
                  Member member) {
-        this.uuid = uuid;
+        this.uuid = UUID.randomUUID();
         this.title = title;
-        this.limitCount = limitCount;
-        this.remainCount = limitCount;
-        this.successContent = successContent;
-        this.successImageUrl = successImageUrl;
+        this.applicants = new Applicants(limitCount);
+        this.successResult = new SuccessResult(successContent, successImageUrl, successForm);
         this.thumbnailImageUrl = thumbnailImageUrl;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
-        this.createdAt = ZonedDateTime.now();
-        this.successForm = successForm;
+        this.eventDuration = new EventDuration(startDateTime, endDateTime);
         this.member = member;
-    }
-
-    public boolean isOpen(ZonedDateTime now) {
-        return startDateTime.isBefore(now) && endDateTime.isAfter(now);
-    }
-
-    public boolean decreaseRemainCount() {
-        if (remainCount == 0) {
-            return false;
-        }
-        remainCount--;
-        return true;
-    }
-
-    public void addSuccessRecord(SuccessRecord successRecord) {
-        successRecords.add(successRecord);
-    }
-
-    public boolean hasSuccessRecord() {
-        return !successRecords.isEmpty();
-    }
-
-    public boolean started() {
-        return startDateTime.isBefore(ZonedDateTime.now());
     }
 
     public void update(
@@ -109,15 +62,26 @@ public class Event {
             String successImageUrl,
             ZonedDateTime startDateTime,
             ZonedDateTime endDateTime,
-            Map<String, Object> successForm
-    ) {
+            Map<String, Object> successForm) {
         this.title = title;
-        this.limitCount = limitCount;
-        this.remainCount = limitCount;
-        this.successContent = successContent;
-        this.successImageUrl = successImageUrl;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
-        this.successForm = successForm;
+        this.applicants = new Applicants(limitCount);
+        this.successResult = new SuccessResult(successContent, successImageUrl, successForm);
+        this.eventDuration = new EventDuration(startDateTime, endDateTime);
+    }
+
+    public void apply(SuccessRecord successRecord) {
+        applicants.addSuccessRecord(successRecord);
+    }
+
+    public boolean isOwnedBy(long memberId) {
+        return this.member.getId().equals(memberId);
+    }
+
+    public boolean isEditable() {
+        return applicants.exists() || eventDuration.started();
+    }
+
+    public boolean isDeletable() {
+        return applicants.exists();
     }
 }

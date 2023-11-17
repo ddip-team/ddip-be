@@ -25,7 +25,7 @@ public class SessionMemberIdResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Long resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+                                NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         SessionMemberId annotation = parameter.getParameterAnnotation(SessionMemberId.class);
         assert request != null;

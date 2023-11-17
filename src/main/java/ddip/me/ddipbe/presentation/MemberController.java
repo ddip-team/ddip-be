@@ -27,7 +27,7 @@ public class MemberController {
     public ResponseEnvelope<MemberMeRes> getMe(@SessionMemberId Long memberId) {
         Member member = memberService.findById(memberId);
 
-        return new ResponseEnvelope<>(new MemberMeRes(member.getId(), member.getEmail()));
+        return ResponseEnvelope.of(new MemberMeRes(member.getId(), member.getEmail()));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -35,15 +35,15 @@ public class MemberController {
     public ResponseEnvelope<MemberIdRes> signup(@Valid @RequestBody SignupReq signupRequest) {
         Member member = memberService.signup(signupRequest.email(), signupRequest.password());
 
-        return new ResponseEnvelope<>(new MemberIdRes(member.getId()));
+        return ResponseEnvelope.of(new MemberIdRes(member.getId()));
     }
 
     @PostMapping("signin")
     public ResponseEnvelope<MemberIdRes> signin(@Valid @RequestBody SigninReq signinRequest, HttpServletRequest request) {
-        long memberId = memberService.signin(signinRequest.email(), signinRequest.password());
-        SessionUtil.setMemberId(request.getSession(), memberId);
+        Member member = memberService.signin(signinRequest.email(), signinRequest.password());
+        SessionUtil.setMemberId(request.getSession(), member.getId());
 
-        return new ResponseEnvelope<>(new MemberIdRes(memberId));
+        return ResponseEnvelope.of(new MemberIdRes(member.getId()));
     }
 
     @PostMapping("signout")
@@ -53,6 +53,6 @@ public class MemberController {
             session.invalidate();
         }
 
-        return new ResponseEnvelope<>(null);
+        return ResponseEnvelope.of(null);
     }
 }

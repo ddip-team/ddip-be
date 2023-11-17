@@ -1,4 +1,4 @@
-package ddip.me.ddipbe.global.config;
+package ddip.me.ddipbe.global.config.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

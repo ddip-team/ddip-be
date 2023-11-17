@@ -1,16 +1,16 @@
 package ddip.me.ddipbe.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Member {
@@ -22,9 +22,6 @@ public class Member {
     private String email;
 
     private String password;
-
-    @OneToMany(mappedBy = "member")
-    private List<Event> events = new ArrayList<>();
 
     public Member(String email, String password) {
         this.email = email;

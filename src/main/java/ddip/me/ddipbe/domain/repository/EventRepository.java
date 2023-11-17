@@ -23,9 +23,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findByUuidForUpdate(UUID uuid);
 
     Page<Event> findAllByMember(Member member, Pageable pageable);
-
-    Page<Event> findAllByMemberAndStartDateTimeBeforeAndEndDateTimeAfter(Member member,
-                                                                         ZonedDateTime start,
-                                                                         ZonedDateTime end,
-                                                                         Pageable pageable);
+    
+    @Query("select e from Event e where e.member = :member and e.eventDuration.startDateTime <= :now and e.eventDuration.endDateTime >= :now")
+    Page<Event> findAllByMemberAndOpen(Member member, ZonedDateTime now, Pageable pageable);
 }

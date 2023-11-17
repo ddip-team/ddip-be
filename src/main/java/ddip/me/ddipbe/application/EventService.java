@@ -1,16 +1,15 @@
 package ddip.me.ddipbe.application;
 
-import ddip.me.ddipbe.application.exception.*;
 import ddip.me.ddipbe.domain.Event;
+import ddip.me.ddipbe.domain.EventDuration;
 import ddip.me.ddipbe.domain.Member;
 import ddip.me.ddipbe.domain.SuccessRecord;
+import ddip.me.ddipbe.domain.exception.*;
 import ddip.me.ddipbe.domain.repository.EventRepository;
-import ddip.me.ddipbe.domain.repository.MemberRepository;
 import ddip.me.ddipbe.domain.repository.SuccessRecordRepository;
+import ddip.me.ddipbe.global.dto.CustomPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,7 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final SuccessRecordRepository successRecordRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Transactional
     public Event createEvent(String title,
@@ -38,14 +37,13 @@ public class EventService {
                              ZonedDateTime end,
                              Map<String, Object> successForm,
                              Long memberId) {
-        Member findMember = memberRepository.findById(memberId).orElseThrow(EventNotFoundException::new);
+        Member member = memberService.findById(memberId);
 
-        if (!eventDateTimeIsValid(start, end)) {
+        if (!EventDuration.isValid(start, end)) {
             throw new EventDateInvalidException();
         }
 
         Event event = new Event(
-                UUID.randomUUID(),
                 title,
                 permitCount,
                 successContent,
@@ -54,15 +52,11 @@ public class EventService {
                 start,
                 end,
                 successForm,
-                findMember
+                member
         );
         event = eventRepository.save(event);
 
         return event;
-    }
-
-    private boolean eventDateTimeIsValid(ZonedDateTime start, ZonedDateTime end) {
-        return end.isAfter(start) && end.isAfter(ZonedDateTime.now());
     }
 
     public Event findEventByUuid(UUID uuid) {
@@ -70,38 +64,44 @@ public class EventService {
     }
 
     public Page<Event> findOwnEvents(Long memberId, int page, int size, boolean filterOpen) {
-        Member foundMember = memberRepository.findById(memberId).orElseThrow(EventNotFoundException::new);
+        Member foundMember = memberService.findById(memberId);
 
         if (filterOpen) {
-            ZonedDateTime now = ZonedDateTime.now();
-            return eventRepository.findAllByMemberAndStartDateTimeBeforeAndEndDateTimeAfter(
+            return eventRepository.findAllByMemberAndOpen(
                     foundMember,
-                    now,
-                    now,
-                    PageRequest.of(page - 1, size, Sort.by("createdAt").descending())
+                    ZonedDateTime.now(),
+                    CustomPageable.of(page, size, Sort.by("createdAt").descending())
             );
         } else {
             return eventRepository.findAllByMember(
                     foundMember,
-                    PageRequest.of(page - 1, size, Sort.by("createdAt").descending())
+                    CustomPageable.of(page, size, Sort.by("createdAt").descending())
             );
         }
     }
 
-    public Page<SuccessRecord> findSuccessRecords(UUID uuid, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("timestamp").ascending());
-        return successRecordRepository.findAllByEventUuid(uuid, pageable);
+    public Page<SuccessRecord> findSuccessRecords(long memberId, UUID uuid, int page, int size) {
+        Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
+
+        if (!event.isOwnedBy(memberId)) {
+            throw new NotEventOwnerException();
+        }
+
+        return successRecordRepository.findAllByEventUuid(
+                uuid,
+                CustomPageable.of(page, size, Sort.by("createdAt").ascending())
+        );
     }
 
     @Transactional
     public void deleteEvent(UUID uuid, Long memberId) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
-        if (!event.getMember().getId().equals(memberId)) {
+        if (!event.isOwnedBy(memberId)) {
             throw new NotEventOwnerException();
         }
 
-        if (event.hasSuccessRecord()) {
+        if (!event.isDeletable()) {
             throw new EventNotDeletableException();
         }
 
@@ -122,15 +122,15 @@ public class EventService {
     ) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
-        if (!event.getMember().getId().equals(memberId)) {
+        if (!event.isOwnedBy(memberId)) {
             throw new NotEventOwnerException();
         }
 
-        if (event.hasSuccessRecord() || event.started()) {
+        if (!event.isEditable()) {
             throw new EventNotEditableException();
         }
 
-        if (!eventDateTimeIsValid(startDateTime, endDateTime)) {
+        if (!EventDuration.isValid(startDateTime, endDateTime)) {
             throw new EventDateInvalidException();
         }
 
@@ -149,7 +149,7 @@ public class EventService {
     public void applyEvent(UUID uuid, String token) {
         Event event = eventRepository.findByUuidForUpdate(uuid).orElseThrow(EventNotFoundException::new);
 
-        if (!event.isOpen(ZonedDateTime.now())) {
+        if (!event.getEventDuration().isOpen(ZonedDateTime.now())) {
             throw new EventNotOpenException();
         }
 
@@ -157,12 +157,7 @@ public class EventService {
             throw new EventAlreadyAppliedException();
         }
 
-        boolean success = event.decreaseRemainCount();
-        if (!success) {
-            throw new EventCapacityFullException();
-        }
-
-        event.addSuccessRecord(new SuccessRecord(token, event, ZonedDateTime.now()));
+        event.apply(new SuccessRecord(token, event));
     }
 
     public Event findSuccessEvent(UUID uuid, String token) {
@@ -180,8 +175,7 @@ public class EventService {
     public void registerSuccessRecordSuccessInputInfo(UUID uuid, Map<String, Object> formInputValue, String token) {
         SuccessRecord successRecord = successRecordRepository.findByEventUuidAndToken(uuid, token)
                 .orElseThrow(SuccessRecordNotFoundException::new);
-        if (!successRecord.registerFormInputValue(formInputValue)) {
-            throw new SuccessFormAlreadyRegisteredException();
-        }
+
+        successRecord.registerFormInputValue(formInputValue);
     }
 }

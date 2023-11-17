@@ -6,9 +6,6 @@ import java.util.List;
 
 public record PageRes<T>(PageInfo pageInfo, List<T> pageData) {
 
-    public record PageInfo(int page, int size, int totalPage, long totalSize) {
-    }
-
     public PageRes(Page<T> page) {
         this(new PageInfo(
                         page.getNumber() + 1,
@@ -18,5 +15,8 @@ public record PageRes<T>(PageInfo pageInfo, List<T> pageData) {
                 ),
                 page.getContent()
         );
+    }
+
+    public record PageInfo(int page, int size, int totalPage, long totalSize) {
     }
 }

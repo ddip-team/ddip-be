@@ -16,10 +16,10 @@ public record EventOwnRes(
     public EventOwnRes(Event event) {
         this(event.getUuid(),
                 event.getTitle(),
-                event.getLimitCount(),
+                event.getApplicants().getLimitCount(),
                 event.getThumbnailImageUrl(),
-                event.getEndDateTime(),
-                event.getStartDateTime()
+                event.getEventDuration().getEndDateTime(),
+                event.getEventDuration().getStartDateTime()
         );
     }
 }

@@ -1,9 +1,9 @@
 package ddip.me.ddipbe.application;
 
-import ddip.me.ddipbe.application.exception.AlreadySignedUpException;
-import ddip.me.ddipbe.application.exception.InvalidPasswordException;
-import ddip.me.ddipbe.application.exception.MemberNotFoundException;
 import ddip.me.ddipbe.domain.Member;
+import ddip.me.ddipbe.domain.exception.AlreadySignedUpException;
+import ddip.me.ddipbe.domain.exception.InvalidPasswordException;
+import ddip.me.ddipbe.domain.exception.MemberNotFoundException;
 import ddip.me.ddipbe.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,13 +34,13 @@ public class MemberService {
         return member;
     }
 
-    public long signin(String email, String password) {
+    public Member signin(String email, String password) {
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new InvalidPasswordException();
         }
 
-        return member.getId();
+        return member;
     }
 }

@@ -3,6 +3,7 @@ package ddip.me.ddipbe.application;
 import ddip.me.ddipbe.application.model.PresignedUrl;
 import ddip.me.ddipbe.application.model.UploadType;
 import ddip.me.ddipbe.global.util.FileNameGenerator;
+import ddip.me.ddipbe.global.util.UrlUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -48,7 +49,7 @@ public class PresignedService {
                 .build();
 
         String presignedUrl = s3Presigner.presignPutObject(preSignRequest).url().toString();
-        String fileUrl = cdnUrl + filePath;
+        String fileUrl = UrlUtil.join(cdnUrl, filePath);
 
         return new PresignedUrl(presignedUrl, fileUrl);
     }
