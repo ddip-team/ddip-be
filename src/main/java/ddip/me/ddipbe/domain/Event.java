@@ -78,10 +78,10 @@ public class Event extends BaseTimeEntity {
     }
 
     public boolean isEditable() {
-        return applicants.exists() || eventDuration.started();
+        return !applicants.exists() && !eventDuration.started();
     }
 
     public boolean isDeletable() {
-        return applicants.exists();
+        return !applicants.exists();
     }
 }
