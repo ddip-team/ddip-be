@@ -32,8 +32,12 @@ public class SessionMemberIdResolver implements HandlerMethodArgumentResolver {
         assert annotation != null;
 
         HttpSession httpSession = request.getSession(false);
-        if (annotation.required() && (httpSession == null || SessionUtil.getMemberId(httpSession) == null)) {
-            throw new UnauthorizedException();
+        if (annotation.required()) {
+            if (httpSession == null || SessionUtil.getMemberId(httpSession) == null) {
+                throw new UnauthorizedException();
+            }
+        } else if (httpSession == null) {
+            return null;
         }
         return SessionUtil.getMemberId(httpSession);
     }

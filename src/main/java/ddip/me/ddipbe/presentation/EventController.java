@@ -130,8 +130,12 @@ public class EventController {
     }
 
     @GetMapping("{uuid}/success")
-    public ResponseEnvelope<EventSuccessRes> findSuccessEvent(@PathVariable UUID uuid, @RequestParam String token) {
-        Event event = eventService.findSuccessEvent(uuid, token);
+    public ResponseEnvelope<EventSuccessRes> findSuccessEvent(
+            @SessionMemberId(required = false) Long memberId,
+            @PathVariable UUID uuid,
+            @RequestParam(required = false) String token
+    ) {
+        Event event = eventService.findSuccessEvent(uuid, memberId, token);
         return ResponseEnvelope.of(new EventSuccessRes(event));
     }
 }

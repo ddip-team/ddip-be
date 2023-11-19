@@ -160,10 +160,19 @@ public class EventService {
         event.apply(new SuccessRecord(token, event));
     }
 
-    public Event findSuccessEvent(UUID uuid, String token) {
-        SuccessRecord successRecord = successRecordRepository.findByEventUuidAndToken(uuid, token)
-                .orElseThrow(SuccessRecordNotFoundException::new);
-        return successRecord.getEvent();
+    public Event findSuccessEvent(UUID uuid, Long memberId, String token) {
+        if (memberId != null) {
+            Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
+            if (!event.isOwnedBy(memberId)) {
+                throw new NotEventOwnerException();
+            }
+            return event;
+        } else {
+            if (token == null || !successRecordRepository.existsByEventUuidAndToken(uuid, token)) {
+                throw new SuccessRecordNotFoundException();
+            }
+            return eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
+        }
     }
 
     public SuccessRecord findSuccessRecord(UUID uuid, String token) {
