@@ -1,5 +1,6 @@
 package ddip.me.ddipbe.domain;
 
+import ddip.me.ddipbe.domain.exception.EventDateInvalidException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,6 +18,9 @@ public class EventDuration {
     private ZonedDateTime endDateTime;
 
     public EventDuration(ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
+        if (!EventDuration.isValid(startDateTime, endDateTime)) {
+            throw new EventDateInvalidException();
+        }
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
     }
@@ -29,7 +33,7 @@ public class EventDuration {
         return startDateTime.isBefore(ZonedDateTime.now());
     }
 
-    public static boolean isValid(ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
+    private static boolean isValid(ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
         return endDateTime.isAfter(startDateTime) && endDateTime.isAfter(ZonedDateTime.now());
     }
 }

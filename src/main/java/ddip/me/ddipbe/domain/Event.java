@@ -60,10 +60,12 @@ public class Event extends BaseTimeEntity {
             Integer limitCount,
             String successContent,
             String successImageUrl,
+            String thumbnailImageUrl,
             ZonedDateTime startDateTime,
             ZonedDateTime endDateTime,
             Map<String, Object> successForm) {
         this.title = title;
+        this.thumbnailImageUrl = thumbnailImageUrl;
         this.applicants = new Applicants(limitCount);
         this.successResult = new SuccessResult(successContent, successImageUrl, successForm);
         this.eventDuration = new EventDuration(startDateTime, endDateTime);

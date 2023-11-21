@@ -1,7 +1,6 @@
 package ddip.me.ddipbe.application;
 
 import ddip.me.ddipbe.domain.Event;
-import ddip.me.ddipbe.domain.EventDuration;
 import ddip.me.ddipbe.domain.Member;
 import ddip.me.ddipbe.domain.SuccessRecord;
 import ddip.me.ddipbe.domain.exception.*;
@@ -38,10 +37,6 @@ public class EventService {
                              Map<String, Object> successForm,
                              Long memberId) {
         Member member = memberService.findById(memberId);
-
-        if (!EventDuration.isValid(start, end)) {
-            throw new EventDateInvalidException();
-        }
 
         Event event = new Event(
                 title,
@@ -115,6 +110,7 @@ public class EventService {
             Integer limitCount,
             String successContent,
             String successImageUrl,
+            String thumbnailImageUrl,
             ZonedDateTime startDateTime,
             ZonedDateTime endDateTime,
             Map<String, Object> successForm,
@@ -130,15 +126,12 @@ public class EventService {
             throw new EventNotEditableException();
         }
 
-        if (!EventDuration.isValid(startDateTime, endDateTime)) {
-            throw new EventDateInvalidException();
-        }
-
         event.update(
                 title,
                 limitCount,
                 successContent,
                 successImageUrl,
+                thumbnailImageUrl,
                 startDateTime,
                 endDateTime,
                 successForm

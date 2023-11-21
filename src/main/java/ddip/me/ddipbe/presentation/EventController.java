@@ -93,6 +93,7 @@ public class EventController {
                 createEventReq.limitCount(),
                 createEventReq.successContent(),
                 createEventReq.successImageUrl(),
+                createEventReq.thumbnailImageUrl(),
                 createEventReq.startDateTime(),
                 createEventReq.endDateTime(),
                 createEventReq.successForm(),
