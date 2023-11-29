@@ -1,0 +1,26 @@
+server:
+  servlet:
+    session:
+      cookie:
+        path: /
+        http-only: true
+        max-age: 3600
+      timeout: 3600
+spring:
+  web:
+    cors:
+      allowed-origins:
+        - http://localhost:3434
+      allowed-methods: GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD
+      allowed-headers: "*"
+      allow-credentials: true
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+  cloud:
+    aws:
+      s3:
+        bucket: ddip-bucket
+      cdn:
+        url: https://cdn.ddip.me/
