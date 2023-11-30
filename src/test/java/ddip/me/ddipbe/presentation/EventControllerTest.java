@@ -3,6 +3,7 @@ package ddip.me.ddipbe.presentation;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import ddip.me.ddipbe.global.util.TestCustomClock;
+import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
@@ -14,6 +15,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -597,7 +599,7 @@ class EventControllerTest extends IntegrationTest {
             long memberId = signup();
             String sessionCookie = signinForSessionCookie();
             UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
-            List<String> tokens = addSuccessRecords(eventUuid, 8);
+            List<String> tokens = addSuccessRecords(eventUuid, 8, false);
 
             // when
             String path = UriComponentsBuilder.fromPath("/events/{uuid}/success-records")
@@ -710,7 +712,7 @@ class EventControllerTest extends IntegrationTest {
             long memberId = signup();
             String sessionCookie = signinForSessionCookie();
             UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
-            addSuccessRecords(eventUuid, 1);
+            addSuccessRecords(eventUuid, 1, false);
 
             // when
             ResponseEntity<String> res = restTemplate.exchange("/events/{uuid}",
@@ -833,7 +835,7 @@ class EventControllerTest extends IntegrationTest {
             long memberId = signup();
             String sessionCookie = signinForSessionCookie();
             UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
-            addSuccessRecords(eventUuid, 1);
+            addSuccessRecords(eventUuid, 1, false);
             String body = """
                     {
                         "title": "new title",
@@ -895,17 +897,290 @@ class EventControllerTest extends IntegrationTest {
     }
 
     @Nested
-    class findSuccessRecordFormInputValue {
+    class findEventSuccessResult {
+        @DisplayName("이벤트 성공 결과 조회를 성공한다. (token이 유효하고, 로그인하지 않은 경우)")
+        @Test
+        void findEventSuccessResult_success_validTokenAndNotLogin() {
+            // given
+            long memberId = signup();
+            UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
+            String token = addSuccessRecords(eventUuid, 1, true).get(0);
 
+            // when
+            String path = UriComponentsBuilder.fromPath("/events/{uuid}/success")
+                    .queryParam("token", token)
+                    .build().toString();
+            ResponseEntity<String> res = restTemplate.exchange(path,
+                    HttpMethod.GET,
+                    createHttpEntity(null, null),
+                    String.class,
+                    eventUuid);
+            DocumentContext json = JsonPath.parse(res.getBody());
+
+            // then
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(json.read("$.data.successContent", String.class)).isEqualTo("content");
+            assertThat(json.read("$.data.successImageUrl", String.class)).isEqualTo("https://cdn.ddip.me/success-image.png");
+            assertThat(json.read("$.data", Map.class)).containsKey("successForm");
+        }
+
+        @DisplayName("이벤트 성공 결과 조회를 성공한다. (token이 유효하고, 로그인한 멤버가 이벤트 주최자가 아닌 경우)")
+        @Test
+        void findEventSuccessResult_success_validTokenAndNotEventOwner() {
+            // given
+            long memberId = signup();
+            UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
+            String token = addSuccessRecords(eventUuid, 1, true).get(0);
+            signup("new@test.com", "test1234!@#$");
+            String newSessionCookie = signinForSessionCookie("new@test.com", "test1234!@#$");
+
+            // when
+            String path = UriComponentsBuilder.fromPath("/events/{uuid}/success")
+                    .queryParam("token", token)
+                    .build().toString();
+            ResponseEntity<String> res = restTemplate.exchange(path,
+                    HttpMethod.GET,
+                    createHttpEntity(null, newSessionCookie),
+                    String.class,
+                    eventUuid);
+            DocumentContext json = JsonPath.parse(res.getBody());
+
+            // then
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(json.read("$.data.successContent", String.class)).isEqualTo("content");
+            assertThat(json.read("$.data.successImageUrl", String.class)).isEqualTo("https://cdn.ddip.me/success-image.png");
+            assertThat(json.read("$.data", Map.class)).containsKey("successForm");
+        }
+
+        @DisplayName("이벤트 성공 결과 조회를 성공한다. (token이 없고, 로그인한 멤버가 이벤트 주최자인 경우)")
+        @Test
+        void findEventSuccessResult_success_notTokenAndEventOwner() {
+            // given
+            long memberId = signup();
+            String sessionCookie = signinForSessionCookie();
+            UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
+
+            // when
+            String path = UriComponentsBuilder.fromPath("/events/{uuid}/success")
+                    .build().toString();
+            ResponseEntity<String> res = restTemplate.exchange(path,
+                    HttpMethod.GET,
+                    createHttpEntity(null, sessionCookie),
+                    String.class,
+                    eventUuid);
+            DocumentContext json = JsonPath.parse(res.getBody());
+
+            // then
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(json.read("$.data.successContent", String.class)).isEqualTo("content");
+            assertThat(json.read("$.data.successImageUrl", String.class)).isEqualTo("https://cdn.ddip.me/success-image.png");
+            assertThat(json.read("$.data", Map.class)).containsKey("successForm");
+        }
+
+        @DisplayName("이벤트 성공 결과 조회를 실패한다. (token도 없고, 로그인도 하지 않은 경우)")
+        @Test
+        void findEventSuccessResult_fail_notTokenAndNotLogin() {
+            // given
+            long memberId = signup();
+            UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
+
+            // when
+            String path = UriComponentsBuilder.fromPath("/events/{uuid}/success")
+                    .build().toString();
+            ResponseEntity<String> res = restTemplate.exchange(path,
+                    HttpMethod.GET,
+                    createHttpEntity(null, null),
+                    String.class,
+                    eventUuid);
+
+            // then
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        }
+
+        @DisplayName("이벤트 성공 결과 조회를 실패한다. (이벤트에 참여하지 않은 경우)")
+        @Test
+        void findEventSuccessResult_fail_notSuccessRecord() {
+            // given
+            long memberId = signup();
+            UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
+            String randomToken = UUID.randomUUID().toString();
+
+            // when
+            String path = UriComponentsBuilder.fromPath("/events/{uuid}/success")
+                    .queryParam("token", randomToken)
+                    .build().toString();
+            ResponseEntity<String> res = restTemplate.exchange(path,
+                    HttpMethod.GET,
+                    createHttpEntity(null, null),
+                    String.class,
+                    eventUuid);
+
+            // then
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Nested
+    class findSuccessRecordFormInputValue {
+        @DisplayName("유저가 입력한 폼 값 조회를 성공한다.")
+        @Test
+        void findSuccessRecordFormInputValue_success() {
+            // given
+            long memberId = signup();
+            UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
+            String token = addSuccessRecords(eventUuid, 1, true).get(0);
+
+            // when
+            String path = UriComponentsBuilder.fromPath("/events/{uuid}/form")
+                    .queryParam("token", token)
+                    .build().toString();
+            ResponseEntity<String> res = restTemplate.exchange(path,
+                    HttpMethod.GET,
+                    createHttpEntity(null, null),
+                    String.class,
+                    eventUuid);
+            DocumentContext json = JsonPath.parse(res.getBody());
+
+            // then
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(json.read("$.data.formInputValue", JSONObject.class)).isNotNull();
+        }
+
+        @DisplayName("유저가 입력한 폼 값 조회를 실패한다. (이벤트에 참여하지 않은 경우)")
+        @Test
+        void findSuccessRecordFormInputValue_fail_notSuccessRecord() {
+            // given
+            long memberId = signup();
+            UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
+            addSuccessRecords(eventUuid, 1, true).get(0);
+            String randomToken = UUID.randomUUID().toString();
+
+            // when
+            String path = UriComponentsBuilder.fromPath("/events/{uuid}/form")
+                    .queryParam("token", randomToken)
+                    .build().toString();
+            ResponseEntity<String> res = restTemplate.exchange(path,
+                    HttpMethod.GET,
+                    createHttpEntity(null, null),
+                    String.class,
+                    eventUuid);
+
+            // then
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        }
+
+        @DisplayName("유저가 입력한 폼 값 조회를 실패한다. (이벤트에 참여했지만, 폼을 입력하지 않은 경우)")
+        @Test
+        void findSuccessRecordFormInputValue_fail_notRegisteredFormInputValue() {
+            // given
+            long memberId = signup();
+            UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
+            String token = addSuccessRecords(eventUuid, 1, false).get(0);
+
+            // when
+            String path = UriComponentsBuilder.fromPath("/events/{uuid}/form")
+                    .queryParam("token", token)
+                    .build().toString();
+            ResponseEntity<String> res = restTemplate.exchange(path,
+                    HttpMethod.GET,
+                    createHttpEntity(null, null),
+                    String.class,
+                    eventUuid);
+
+            // then
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Nested
     class registerSuccessRecordFormInputValue {
+        @DisplayName("유저가 입력한 폼 값 등록을 성공한다.")
+        @Test
+        void registerSuccessRecordFormInputValue_success() {
+            // given
+            long memberId = signup();
+            UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
+            String token = addSuccessRecords(eventUuid, 1, false).get(0);
+            String body = """
+                    {
+                        "formInputValue": {
+                            "test": "test"
+                        }
+                    }
+                    """;
 
-    }
+            // when
+            String path = UriComponentsBuilder.fromPath("/events/{uuid}/form")
+                    .queryParam("token", token)
+                    .build().toString();
+            ResponseEntity<String> res = restTemplate.exchange(path,
+                    HttpMethod.POST,
+                    createHttpEntity(body, null),
+                    String.class,
+                    eventUuid);
 
-    @Nested
-    class findSuccessEvent {
+            // then
+            System.out.println(res.getBody());
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+        }
 
+        @DisplayName("유저가 입력한 폼 값 등록을 실패한다. (이벤트에 참여하지 않은 경우)")
+        @Test
+        void registerSuccessRecordFormInputValue_fail_notSuccessRecord() {
+            // given
+            long memberId = signup();
+            UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
+            addSuccessRecords(eventUuid, 1, false);
+            String randomToken = UUID.randomUUID().toString();
+            String body = """
+                    {
+                        "formInputValue": {
+                            "test": "test"
+                        }
+                    }
+                    """;
+
+            // when
+            String path = UriComponentsBuilder.fromPath("/events/{uuid}/form")
+                    .queryParam("token", randomToken)
+                    .build().toString();
+            ResponseEntity<String> res = restTemplate.exchange(path,
+                    HttpMethod.POST,
+                    createHttpEntity(body, null),
+                    String.class,
+                    eventUuid);
+
+            // then
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        }
+
+        @DisplayName("유저가 입력한 폼 값 등록을 실패한다. (이미 폼을 입력한 경우)")
+        @Test
+        void registerSuccessRecordFormInputValue_fail_alreadyRegisteredFormInputValue() {
+            // given
+            long memberId = signup();
+            UUID eventUuid = addEvent(memberId, now.minusDays(1), now.plusDays(1), now);
+            String token = addSuccessRecords(eventUuid, 1, true).get(0);
+            String body = """
+                    {
+                        "formInputValue": {
+                            "test": "test"
+                        }
+                    }
+                    """;
+
+            // when
+            String path = UriComponentsBuilder.fromPath("/events/{uuid}/form")
+                    .queryParam("token", token)
+                    .build().toString();
+            ResponseEntity<String> res = restTemplate.exchange(path,
+                    HttpMethod.POST,
+                    createHttpEntity(body, null),
+                    String.class,
+                    eventUuid);
+
+            // then
+            assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        }
     }
 }

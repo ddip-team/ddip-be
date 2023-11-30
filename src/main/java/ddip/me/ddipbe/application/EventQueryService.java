@@ -52,16 +52,17 @@ public class EventQueryService {
         return eventPage.map(EventDto::new);
     }
 
-    public SuccessResult findSuccessEvent(UUID uuid, Long memberId, String token) {
-        if (memberId == null) {
-            if (token == null || !successRecordRepository.existsByEventUuidAndToken(uuid, token)) {
-                throw new SuccessRecordNotFoundException();
-            }
-        }
-
+    public SuccessResult findEventSuccessResult(UUID uuid, Long memberId, String token) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
-        if (memberId != null && !event.isOwnedBy(memberId)) {
+        if (token != null) {
+            if (!successRecordRepository.existsByEventUuidAndToken(uuid, token)) {
+                throw new SuccessRecordNotFoundException();
+            }
+            return event.getSuccessResult();
+        }
+
+        if (memberId == null || !event.isOwnedBy(memberId)) {
             throw new NotEventOwnerException();
         }
 
@@ -86,6 +87,11 @@ public class EventQueryService {
     public Map<String, Object> findSuccessRecordFormInputValue(UUID uuid, String token) {
         SuccessRecord successRecord = successRecordRepository.findByEventUuidAndToken(uuid, token)
                 .orElseThrow(SuccessRecordNotFoundException::new);
+
+        if (successRecord.getFormInputValue() == null) {
+            throw new SuccessRecordNotFoundException();
+        }
+
         return successRecord.getFormInputValue();
     }
 }

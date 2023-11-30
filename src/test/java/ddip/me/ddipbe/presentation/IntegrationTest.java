@@ -141,7 +141,7 @@ public abstract class IntegrationTest {
         return uuid;
     }
 
-    protected List<String> addSuccessRecords(UUID eventUuid, int count) {
+    protected List<String> addSuccessRecords(UUID eventUuid, int count, boolean isFormInput) {
         Long eventId = jdbcTemplate.queryForObject("SELECT id FROM event WHERE uuid = UUID_TO_BIN(?)", Long.class, eventUuid.toString());
 
         List<String> tokens = new ArrayList<>();
@@ -152,7 +152,7 @@ public abstract class IntegrationTest {
             jdbcTemplate.update("INSERT INTO success_record (event_id, token, form_input_value, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
                     eventId,
                     token,
-                    null,
+                    isFormInput ? "{ \"test\": \"test\"}" : null,
                     timestamp,
                     timestamp);
             tokens.add(token);

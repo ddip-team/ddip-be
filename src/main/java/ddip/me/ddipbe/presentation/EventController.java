@@ -116,6 +116,16 @@ public class EventController {
         return ResponseEnvelope.of(null);
     }
 
+    @GetMapping("{uuid}/success")
+    public ResponseEnvelope<SuccessResult> findEventSuccessResult(
+            @SessionMemberId(required = false) Long memberId,
+            @PathVariable UUID uuid,
+            @RequestParam(required = false) String token
+    ) {
+        SuccessResult successResult = eventQueryService.findEventSuccessResult(uuid, memberId, token);
+        return ResponseEnvelope.of(successResult);
+    }
+
     @GetMapping("{uuid}/form")
     public ResponseEnvelope<FormInputValueRes> findSuccessRecordFormInputValue(
             @PathVariable UUID uuid,
@@ -125,7 +135,6 @@ public class EventController {
         return ResponseEnvelope.of(new FormInputValueRes(formInputValue));
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("{uuid}/form")
     public ResponseEnvelope<?> registerSuccessRecordFormInputValue(
             @PathVariable UUID uuid,
@@ -137,15 +146,5 @@ public class EventController {
                 registerFormInputValueReq.formInputValue(),
                 token);
         return ResponseEnvelope.of(null);
-    }
-
-    @GetMapping("{uuid}/success")
-    public ResponseEnvelope<SuccessResult> findSuccessEvent(
-            @SessionMemberId(required = false) Long memberId,
-            @PathVariable UUID uuid,
-            @RequestParam(required = false) String token
-    ) {
-        SuccessResult successResult = eventQueryService.findSuccessEvent(uuid, memberId, token);
-        return ResponseEnvelope.of(successResult);
     }
 }
