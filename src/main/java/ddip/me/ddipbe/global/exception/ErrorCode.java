@@ -34,7 +34,7 @@ public enum ErrorCode {
     SUCCESS_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "이벤트 성공 기록이 존재하지 않습니다.", Set.of(SuccessRecordNotFoundException.class)),
     EVENT_NOT_EDITABLE(HttpStatus.BAD_REQUEST, "이벤트 수정이 불가능합니다.", Set.of(EventNotEditableException.class)),
     EVENT_NOT_DELETABLE(HttpStatus.BAD_REQUEST, "이벤트 삭제가 불가능합니다.", Set.of(EventNotDeletableException.class)),
-    NOT_EVENT_OWNER(HttpStatus.UNAUTHORIZED, "이벤트 주최자가 아닙니다.", Set.of(NotEventOwnerException.class)),
+    NOT_EVENT_OWNER(HttpStatus.FORBIDDEN, "이벤트 주최자가 아닙니다.", Set.of(NotEventOwnerException.class)),
     ;
 
     private final HttpStatusCode status;
