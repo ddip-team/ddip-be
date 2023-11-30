@@ -34,7 +34,7 @@ public abstract class IntegrationTest {
     protected PasswordEncoder passwordEncoder;
 
     protected TestCustomClock testCustomClock = new TestCustomClock();
-    protected static ZonedDateTime now;
+    protected static ZonedDateTime now = ZonedDateTime.now();
     protected static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneId.of("UTC"));
 
     protected void truncateDatabase() {
@@ -125,10 +125,11 @@ public abstract class IntegrationTest {
 
     protected UUID addEvent(long memberId, ZonedDateTime startDateTime, ZonedDateTime endDateTime, ZonedDateTime createdAt) {
         UUID uuid = UUID.randomUUID();
-        jdbcTemplate.update("INSERT INTO event (uuid, member_id, title, limit_count, success_content, success_image_url, thumbnail_image_url, start_date_time, end_date_time, success_form, created_at, updated_at) VALUES (UUID_TO_BIN(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        jdbcTemplate.update("INSERT INTO event (uuid, member_id, title, limit_count, remain_count, success_content, success_image_url, thumbnail_image_url, start_date_time, end_date_time, success_form, created_at, updated_at) VALUES (UUID_TO_BIN(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 uuid.toString(),
                 memberId,
                 "title",
+                10,
                 10,
                 "content",
                 "https://cdn.ddip.me/success-image.png",
