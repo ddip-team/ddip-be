@@ -1,7 +1,8 @@
 package ddip.me.ddipbe.presentation.dto.response;
 
 
-import ddip.me.ddipbe.domain.Event;
+import ddip.me.ddipbe.application.dto.EventWithMemberDto;
+import ddip.me.ddipbe.application.dto.MemberDto;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -13,16 +14,16 @@ public record EventDetailRes(
         String thumbnailImageUrl,
         ZonedDateTime startDateTime,
         ZonedDateTime endDateTime,
-        MemberRes member
+        MemberDto member
 ) {
-    public EventDetailRes(Event event) {
-        this(event.getTitle(),
-                event.getUuid(),
-                event.getApplicants().getLimitCount(),
-                event.getThumbnailImageUrl(),
-                event.getEventDuration().getStartDateTime(),
-                event.getEventDuration().getEndDateTime(),
-                new MemberRes(event.getMember())
+    public EventDetailRes(EventWithMemberDto eventWithMemberDto) {
+        this(eventWithMemberDto.event().title(),
+                eventWithMemberDto.event().uuid(),
+                eventWithMemberDto.event().limitCount(),
+                eventWithMemberDto.event().thumbnailImageUrl(),
+                eventWithMemberDto.event().startDateTime(),
+                eventWithMemberDto.event().endDateTime(),
+                eventWithMemberDto.member()
         );
     }
 }

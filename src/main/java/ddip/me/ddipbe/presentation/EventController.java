@@ -1,20 +1,27 @@
 package ddip.me.ddipbe.presentation;
 
-import ddip.me.ddipbe.application.EventService;
-import ddip.me.ddipbe.domain.Event;
-import ddip.me.ddipbe.domain.SuccessRecord;
+import ddip.me.ddipbe.application.EventCommandService;
+import ddip.me.ddipbe.application.EventQueryService;
+import ddip.me.ddipbe.application.dto.EventDto;
+import ddip.me.ddipbe.application.dto.EventWithMemberDto;
+import ddip.me.ddipbe.application.dto.SuccessRecordDto;
+import ddip.me.ddipbe.domain.SuccessResult;
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
 import ddip.me.ddipbe.global.dto.ResponseEnvelope;
 import ddip.me.ddipbe.presentation.dto.request.CreateEventReq;
 import ddip.me.ddipbe.presentation.dto.request.PageReq;
 import ddip.me.ddipbe.presentation.dto.request.RegisterFormInputValueReq;
-import ddip.me.ddipbe.presentation.dto.response.*;
+import ddip.me.ddipbe.presentation.dto.response.EventDetailRes;
+import ddip.me.ddipbe.presentation.dto.response.EventUuidRes;
+import ddip.me.ddipbe.presentation.dto.response.FormInputValueRes;
+import ddip.me.ddipbe.presentation.dto.response.PageRes;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -22,15 +29,16 @@ import java.util.UUID;
 @RequestMapping("events")
 public class EventController {
 
-    private final EventService eventService;
+    private final EventQueryService eventQueryService;
+    private final EventCommandService eventCommandService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEnvelope<EventUUIDRes> createEvent(
+    public ResponseEnvelope<EventUuidRes> createEvent(
             @Valid @RequestBody CreateEventReq createEventReq,
             @SessionMemberId Long memberId
     ) {
-        Event event = eventService.createEvent(
+        UUID eventUuid = eventCommandService.createEvent(
                 createEventReq.title(),
                 createEventReq.limitCount(),
                 createEventReq.successContent(),
@@ -40,44 +48,45 @@ public class EventController {
                 createEventReq.endDateTime(),
                 createEventReq.successForm(),
                 memberId);
-        return ResponseEnvelope.of(new EventUUIDRes(event.getUuid()));
+
+        return ResponseEnvelope.of(new EventUuidRes(eventUuid));
     }
 
     @GetMapping("{uuid}")
     public ResponseEnvelope<EventDetailRes> findEventByUuid(@PathVariable UUID uuid) {
-        Event foundEvent = eventService.findEventByUuid(uuid);
-        return ResponseEnvelope.of(new EventDetailRes(foundEvent));
+        EventWithMemberDto eventByUuid = eventQueryService.findEventByUuid(uuid);
+        return ResponseEnvelope.of(new EventDetailRes(eventByUuid));
     }
 
     @GetMapping("me")
-    public ResponseEnvelope<PageRes<EventOwnRes>> findOwnEvents(
+    public ResponseEnvelope<PageRes<EventDto>> findOwnEvents(
             @SessionMemberId Long memberId,
             @Valid PageReq pageReq,
             @RequestParam(required = false) String open
     ) {
         boolean checkOpen = open != null;
-        Page<Event> ownEventPage = eventService.findOwnEvents(memberId, pageReq.page(), pageReq.size(), checkOpen);
+        Page<EventDto> eventPage = eventQueryService.findOwnEvents(memberId, pageReq.page(), pageReq.size(), checkOpen);
 
-        return ResponseEnvelope.of(new PageRes<>(ownEventPage.map(EventOwnRes::new)));
+        return ResponseEnvelope.of(new PageRes<>(eventPage));
     }
 
     @GetMapping("{uuid}/success-records")
-    public ResponseEnvelope<PageRes<SuccessRecordRes>> findSuccessRecords(
+    public ResponseEnvelope<PageRes<SuccessRecordDto>> findSuccessRecords(
             @SessionMemberId Long memberId,
             @PathVariable UUID uuid,
             @Valid PageReq pageReq
     ) {
-        Page<SuccessRecord> successRecords = eventService.findSuccessRecords(
+        Page<SuccessRecordDto> successRecordPage = eventQueryService.findSuccessRecords(
                 memberId,
                 uuid,
                 pageReq.page(),
                 pageReq.size());
-        return ResponseEnvelope.of(new PageRes<>(successRecords.map(SuccessRecordRes::new)));
+        return ResponseEnvelope.of(new PageRes<>(successRecordPage));
     }
 
     @DeleteMapping("{uuid}")
     public ResponseEnvelope<?> deleteEvent(@PathVariable UUID uuid, @SessionMemberId Long memberId) {
-        eventService.deleteEvent(uuid, memberId);
+        eventCommandService.deleteEvent(uuid, memberId);
         return ResponseEnvelope.of(null);
     }
 
@@ -87,7 +96,7 @@ public class EventController {
             @RequestBody CreateEventReq createEventReq,
             @SessionMemberId Long memberId
     ) {
-        eventService.updateEvent(
+        eventCommandService.updateEvent(
                 uuid,
                 createEventReq.title(),
                 createEventReq.limitCount(),
@@ -103,7 +112,7 @@ public class EventController {
 
     @PostMapping("{uuid}/apply")
     public ResponseEnvelope<?> applyEvent(@PathVariable UUID uuid, @RequestParam String token) {
-        eventService.applyEvent(uuid, token);
+        eventCommandService.applyEvent(uuid, token);
         return ResponseEnvelope.of(null);
     }
 
@@ -112,8 +121,8 @@ public class EventController {
             @PathVariable UUID uuid,
             @RequestParam String token
     ) {
-        SuccessRecord successRecord = eventService.findSuccessRecord(uuid, token);
-        return ResponseEnvelope.of(new FormInputValueRes(successRecord));
+        Map<String, Object> formInputValue = eventQueryService.findSuccessRecordFormInputValue(uuid, token);
+        return ResponseEnvelope.of(new FormInputValueRes(formInputValue));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -123,7 +132,7 @@ public class EventController {
             @Valid @RequestBody RegisterFormInputValueReq registerFormInputValueReq,
             @RequestParam String token
     ) {
-        eventService.registerSuccessRecordSuccessInputInfo(
+        eventCommandService.registerSuccessRecordSuccessInputInfo(
                 uuid,
                 registerFormInputValueReq.formInputValue(),
                 token);
@@ -131,12 +140,12 @@ public class EventController {
     }
 
     @GetMapping("{uuid}/success")
-    public ResponseEnvelope<EventSuccessRes> findSuccessEvent(
+    public ResponseEnvelope<SuccessResult> findSuccessEvent(
             @SessionMemberId(required = false) Long memberId,
             @PathVariable UUID uuid,
             @RequestParam(required = false) String token
     ) {
-        Event event = eventService.findSuccessEvent(uuid, memberId, token);
-        return ResponseEnvelope.of(new EventSuccessRes(event));
+        SuccessResult successResult = eventQueryService.findSuccessEvent(uuid, memberId, token);
+        return ResponseEnvelope.of(successResult);
     }
 }
