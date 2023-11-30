@@ -7,6 +7,7 @@ import ddip.me.ddipbe.domain.exception.*;
 import ddip.me.ddipbe.domain.repository.EventRepository;
 import ddip.me.ddipbe.domain.repository.SuccessRecordRepository;
 import ddip.me.ddipbe.global.dto.CustomPageable;
+import ddip.me.ddipbe.global.util.CustomClock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -64,7 +65,7 @@ public class EventService {
         if (filterOpen) {
             return eventRepository.findAllByMemberAndOpen(
                     foundMember,
-                    ZonedDateTime.now(),
+                    CustomClock.now(),
                     CustomPageable.of(page, size, Sort.by("createdAt").descending())
             );
         } else {
@@ -142,7 +143,7 @@ public class EventService {
     public void applyEvent(UUID uuid, String token) {
         Event event = eventRepository.findByUuidForUpdate(uuid).orElseThrow(EventNotFoundException::new);
 
-        if (!event.getEventDuration().isOpen(ZonedDateTime.now())) {
+        if (!event.getEventDuration().isOpen(CustomClock.now())) {
             throw new EventNotOpenException();
         }
 
