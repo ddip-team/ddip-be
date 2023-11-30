@@ -63,7 +63,7 @@ class PresignedControllerTest extends IntegrationTest {
 
         // then
         assertThat(res.getStatusCode().value()).isEqualTo(200);
-        assertThat(json.read("$.data", List.class)).hasSize(1);
+        assertThat(json.read("$.data", List.class)).isNotNull().hasSize(1);
         assertPresignedUrl(json.read("$.data[0].presignedUrl", String.class), fileName);
     }
 
@@ -87,7 +87,7 @@ class PresignedControllerTest extends IntegrationTest {
 
         // then
         assertThat(res.getStatusCode().value()).isEqualTo(200);
-        assertThat(json.read("$.data", List.class)).hasSize(1);
+        assertThat(json.read("$.data", List.class)).isNotNull().hasSize(1);
         assertPresignedUrl(json.read("$.data[0].presignedUrl", String.class), fileName);
     }
 
@@ -112,7 +112,7 @@ class PresignedControllerTest extends IntegrationTest {
 
         // then
         assertThat(res.getStatusCode().value()).isEqualTo(200);
-        assertThat(json.read("$.data", List.class)).hasSize(2);
+        assertThat(json.read("$.data", List.class)).isNotNull().hasSize(2);
         assertPresignedUrl(json.read("$.data[0].presignedUrl", String.class), fileName1);
         assertPresignedUrl(json.read("$.data[1].presignedUrl", String.class), fileName2);
     }
