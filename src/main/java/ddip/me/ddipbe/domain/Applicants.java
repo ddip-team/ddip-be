@@ -2,6 +2,7 @@ package ddip.me.ddipbe.domain;
 
 import ddip.me.ddipbe.domain.exception.EventCapacityFullException;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
@@ -16,8 +17,10 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Applicants {
 
+    @Column(nullable = false)
     private Integer limitCount;
 
+    @Column(nullable = false)
     private Integer remainCount;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.PERSIST)

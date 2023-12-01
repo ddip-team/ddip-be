@@ -146,7 +146,10 @@ public class EventService {
             throw new EventNotOpenException();
         }
 
-        if (successRecordRepository.existsByEventUuidAndToken(uuid, token)) {
+        /*if (successRecordRepository.existsByEventUuidAndToken(uuid, token)) {
+            throw new EventAlreadyAppliedException();
+        }*/
+        if (successRecordRepository.existsByEventIdAndToken(event.getId(), token)){
             throw new EventAlreadyAppliedException();
         }
 
