@@ -1,5 +1,6 @@
 package ddip.me.ddipbe.global.entity;
 
+import ddip.me.ddipbe.global.util.CustomClock;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
@@ -18,16 +19,16 @@ public abstract class BaseTimeEntity {
     private ZonedDateTime updatedAt;
 
     public BaseTimeEntity() {
-        createdAt = updatedAt = ZonedDateTime.now();
+        createdAt = updatedAt = CustomClock.now();
     }
 
     @PrePersist
     public void prePersist() {
-        createdAt = updatedAt = ZonedDateTime.now();
+        createdAt = updatedAt = CustomClock.now();
     }
 
     @PreUpdate
     public void preUpdate() {
-        updatedAt = ZonedDateTime.now();
+        updatedAt = CustomClock.now();
     }
 }

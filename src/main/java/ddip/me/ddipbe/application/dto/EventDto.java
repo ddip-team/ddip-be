@@ -1,25 +1,26 @@
-package ddip.me.ddipbe.presentation.dto.response;
+package ddip.me.ddipbe.application.dto;
 
 import ddip.me.ddipbe.domain.Event;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-public record EventOwnRes(
+public record EventDto(
         UUID uuid,
         String title,
         Integer limitCount,
         String thumbnailImageUrl,
-        ZonedDateTime endDateTime,
-        ZonedDateTime startDateTime
+        ZonedDateTime startDateTime,
+        ZonedDateTime endDateTime
 ) {
-    public EventOwnRes(Event event) {
-        this(event.getUuid(),
+    public EventDto(Event event) {
+        this(
+                event.getUuid(),
                 event.getTitle(),
                 event.getApplicants().getLimitCount(),
                 event.getThumbnailImageUrl(),
-                event.getEventDuration().getEndDateTime(),
-                event.getEventDuration().getStartDateTime()
+                event.getEventDuration().getStartDateTime(),
+                event.getEventDuration().getEndDateTime()
         );
     }
 }

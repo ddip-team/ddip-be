@@ -1,14 +1,14 @@
 package ddip.me.ddipbe.presentation;
 
-import ddip.me.ddipbe.application.MemberService;
-import ddip.me.ddipbe.domain.Member;
+import ddip.me.ddipbe.application.MemberCommandService;
+import ddip.me.ddipbe.application.MemberQueryService;
+import ddip.me.ddipbe.application.dto.MemberDto;
 import ddip.me.ddipbe.global.annotation.SessionMemberId;
 import ddip.me.ddipbe.global.dto.ResponseEnvelope;
 import ddip.me.ddipbe.global.util.SessionUtil;
 import ddip.me.ddipbe.presentation.dto.request.SigninReq;
 import ddip.me.ddipbe.presentation.dto.request.SignupReq;
 import ddip.me.ddipbe.presentation.dto.response.MemberIdRes;
-import ddip.me.ddipbe.presentation.dto.response.MemberMeRes;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -21,29 +21,30 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
+    private final MemberCommandService memberCommandService;
 
     @GetMapping("me")
-    public ResponseEnvelope<MemberMeRes> getMe(@SessionMemberId Long memberId) {
-        Member member = memberService.findById(memberId);
+    public ResponseEnvelope<MemberDto> getMe(@SessionMemberId Long memberId) {
+        MemberDto member = memberQueryService.findById(memberId);
 
-        return ResponseEnvelope.of(new MemberMeRes(member.getId(), member.getEmail()));
+        return ResponseEnvelope.of(member);
+    }
+
+    @PostMapping("signin")
+    public ResponseEnvelope<MemberIdRes> signin(@Valid @RequestBody SigninReq signinRequest, HttpServletRequest request) {
+        long memberId = memberQueryService.signin(signinRequest.email(), signinRequest.password());
+        SessionUtil.setMemberId(request.getSession(), memberId);
+
+        return ResponseEnvelope.of(new MemberIdRes(memberId));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("signup")
     public ResponseEnvelope<MemberIdRes> signup(@Valid @RequestBody SignupReq signupRequest) {
-        Member member = memberService.signup(signupRequest.email(), signupRequest.password());
+        long memberId = memberCommandService.signup(signupRequest.email(), signupRequest.password());
 
-        return ResponseEnvelope.of(new MemberIdRes(member.getId()));
-    }
-
-    @PostMapping("signin")
-    public ResponseEnvelope<MemberIdRes> signin(@Valid @RequestBody SigninReq signinRequest, HttpServletRequest request) {
-        Member member = memberService.signin(signinRequest.email(), signinRequest.password());
-        SessionUtil.setMemberId(request.getSession(), member.getId());
-
-        return ResponseEnvelope.of(new MemberIdRes(member.getId()));
+        return ResponseEnvelope.of(new MemberIdRes(memberId));
     }
 
     @PostMapping("signout")

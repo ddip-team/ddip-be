@@ -1,6 +1,7 @@
 package ddip.me.ddipbe.domain;
 
 import ddip.me.ddipbe.domain.exception.EventDateInvalidException;
+import ddip.me.ddipbe.global.util.CustomClock;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,10 +31,10 @@ public class EventDuration {
     }
 
     public boolean started() {
-        return startDateTime.isBefore(ZonedDateTime.now());
+        return startDateTime.isBefore(CustomClock.now());
     }
 
     private static boolean isValid(ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
-        return endDateTime.isAfter(startDateTime) && endDateTime.isAfter(ZonedDateTime.now());
+        return endDateTime.isAfter(startDateTime) && endDateTime.isAfter(CustomClock.now());
     }
 }
