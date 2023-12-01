@@ -529,7 +529,7 @@ class EventControllerTest extends IntegrationTest {
             String url = UriComponentsBuilder.fromPath("/events/me")
                     .queryParam("page", 1)
                     .queryParam("size", 10)
-                    .queryParam("open", true)
+                    .queryParam("open")
                     .build().toString();
             ResponseEntity<String> res = restTemplate.exchange(url,
                     HttpMethod.GET,

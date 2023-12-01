@@ -12,13 +12,13 @@ import ddip.me.ddipbe.domain.exception.SuccessRecordNotFoundException;
 import ddip.me.ddipbe.domain.repository.EventRepository;
 import ddip.me.ddipbe.domain.repository.SuccessRecordRepository;
 import ddip.me.ddipbe.global.dto.CustomPageable;
+import ddip.me.ddipbe.global.util.CustomClock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -40,7 +40,7 @@ public class EventQueryService {
         if (filterOpen) {
             eventPage = eventRepository.findAllByMemberIdAndOpen(
                     memberId,
-                    ZonedDateTime.now(),
+                    CustomClock.now(),
                     CustomPageable.of(page, size, Sort.by("createdAt").descending())
             );
         } else {
