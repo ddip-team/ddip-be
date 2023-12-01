@@ -38,6 +38,17 @@ resource "aws_security_group" "ec2" {
       security_groups  = [aws_security_group.alb.id]
       self             = false
       to_port          = var.app_port
+    },
+    {
+      cidr_blocks      = []
+      description      = ""
+      from_port        = 9900
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "tcp"
+      security_groups  = [aws_security_group.alb.id]
+      self             = false
+      to_port          = 9900
     }
   ]
 

@@ -13,7 +13,7 @@ resource "aws_s3_bucket_cors_configuration" "example" {
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["PUT"]
-    allowed_origins = ["https://${var.domain}"]
+    allowed_origins = ["https://${var.domain}", "https://local.${var.domain}"]
     expose_headers  = []
   }
 }

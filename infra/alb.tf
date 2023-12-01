@@ -23,6 +23,13 @@ resource "aws_alb_target_group" "default" {
   }
 }
 
+resource "aws_alb_target_group" "monitor" {
+  name     = "${var.project_name}-monitor-target-group"
+  port     = 9900
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.main.id
+}
+
 resource "aws_alb_listener" "redirect" {
   load_balancer_arn = aws_alb.default.id
   port              = "80"
@@ -56,9 +63,25 @@ resource "aws_alb_listener" "default" {
   }
 }
 
-resource "aws_lb_listener_rule" "check_origin" {
+resource "aws_lb_listener_rule" "check_origin_monitor" {
   listener_arn = aws_alb_listener.default.id
   priority     = 99
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.monitor.arn
+  }
+
+  condition {
+    host_header {
+      values = ["monitor.${var.domain}"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "check_origin_api" {
+  listener_arn = aws_alb_listener.default.id
+  priority     = 98
 
   action {
     type             = "forward"
@@ -72,10 +95,36 @@ resource "aws_lb_listener_rule" "check_origin" {
   }
 }
 
+resource "aws_lb_listener_rule" "block-actuator-path" {
+  listener_arn = aws_alb_listener.default.id
+  priority     = 97
+
+  action {
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "text/plain"
+      status_code  = "403"
+    }
+  }
+
+  condition {
+    path_pattern {
+      values = ["/actuator", "/actuator/*"]
+    }
+  }
+}
+
 resource "aws_alb_target_group_attachment" "default" {
   target_group_arn = aws_alb_target_group.default.arn
   target_id        = aws_instance.default.id
-  port             = 8080
+  port             = var.app_port
+}
+
+resource "aws_alb_target_group_attachment" "monitor" {
+  target_group_arn = aws_alb_target_group.monitor.arn
+  target_id        = aws_instance.default.id
+  port             = 9900
 }
 
 resource "aws_security_group" "alb" {
@@ -84,7 +133,7 @@ resource "aws_security_group" "alb" {
 
   ingress = [
     {
-      cidr_blocks      = ["0.0.0.0/0", ]
+      cidr_blocks      = ["0.0.0.0/0",]
       description      = ""
       from_port        = 80
       ipv6_cidr_blocks = []
@@ -95,7 +144,7 @@ resource "aws_security_group" "alb" {
       to_port          = 80
     },
     {
-      cidr_blocks      = ["0.0.0.0/0", ]
+      cidr_blocks      = ["0.0.0.0/0",]
       description      = ""
       from_port        = 443
       ipv6_cidr_blocks = []
