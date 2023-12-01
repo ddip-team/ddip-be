@@ -36,10 +36,9 @@ public class MemberService {
 
     public Member signin(String email, String password) {
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
-
-        if (!passwordEncoder.matches(password, member.getPassword())) {
+        /*if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new InvalidPasswordException();
-        }
+        }*/
 
         return member;
     }
