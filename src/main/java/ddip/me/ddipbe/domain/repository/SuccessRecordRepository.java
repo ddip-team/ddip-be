@@ -16,5 +16,7 @@ public interface SuccessRecordRepository extends Repository<SuccessRecord, Long>
 
     boolean existsByEventUuidAndToken(UUID uuid, String token);
 
+    boolean existsByEventIdAndToken(Long eventId, String token);
+
     Page<SuccessRecord> findAllByEventUuid(UUID uuid, Pageable pageable);
 }
