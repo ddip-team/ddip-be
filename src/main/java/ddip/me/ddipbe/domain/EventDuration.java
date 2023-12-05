@@ -15,10 +15,10 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventDuration {
 
-    @Column(nullable = false, name = "start_date_time")
+    @Column(nullable = false)
     private ZonedDateTime startDateTime;
 
-    @Column(nullable = false, name = "end_date_time")
+    @Column(nullable = false)
     private ZonedDateTime endDateTime;
 
     public EventDuration(ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
