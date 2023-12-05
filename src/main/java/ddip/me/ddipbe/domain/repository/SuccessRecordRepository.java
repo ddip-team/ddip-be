@@ -13,8 +13,8 @@ public interface SuccessRecordRepository extends Repository<SuccessRecord, Long>
 
     @Query("SELECT p FROM SuccessRecord p JOIN FETCH p.event WHERE p.event.uuid = :uuid AND p.token = :token")
     Optional<SuccessRecord> findByEventUuidAndToken(UUID uuid, String token);  // TODO: 쿼리 최적화
-
-    boolean existsByEventUuidAndToken(UUID uuid, String token);
+    
+    boolean existsByEventIdAndToken(Long eventId, String token);
 
     Page<SuccessRecord> findAllByEventUuid(UUID uuid, Pageable pageable);
 }

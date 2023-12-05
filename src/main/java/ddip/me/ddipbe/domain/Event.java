@@ -21,8 +21,10 @@ public class Event extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private UUID uuid;
 
+    @Column(nullable = false)
     private String title;
 
     private String thumbnailImageUrl;

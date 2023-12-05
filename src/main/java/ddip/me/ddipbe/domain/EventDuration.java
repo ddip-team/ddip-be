@@ -2,6 +2,7 @@ package ddip.me.ddipbe.domain;
 
 import ddip.me.ddipbe.domain.exception.EventDateInvalidException;
 import ddip.me.ddipbe.global.util.CustomClock;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,8 +15,10 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventDuration {
 
+    @Column(nullable = false)
     private ZonedDateTime startDateTime;
 
+    @Column(nullable = false)
     private ZonedDateTime endDateTime;
 
     public EventDuration(ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
