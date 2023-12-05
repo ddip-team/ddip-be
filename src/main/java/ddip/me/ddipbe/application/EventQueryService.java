@@ -56,7 +56,7 @@ public class EventQueryService {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
         if (token != null) {
-            if (!successRecordRepository.existsByEventUuidAndToken(uuid, token)) {
+            if (!successRecordRepository.existsByEventIdAndToken(event.getId(), token)) {
                 throw new SuccessRecordNotFoundException();
             }
             return event.getSuccessResult();
