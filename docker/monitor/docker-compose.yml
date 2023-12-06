@@ -3,7 +3,7 @@ services:
     image: prom/node-exporter:v1.7.0
     container_name: node-exporter
     ports:
-      - 9199:9100
+      - 9100:9100
     restart: unless-stopped
     volumes:
       - /proc:/host/proc:ro
@@ -20,14 +20,14 @@ services:
     image: prom/prometheus:v2.48.0
     container_name: prometheus
     ports:
-      - 9099:9090
+      - 9090:9090
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--web.enable-lifecycle'
     volumes:
       - ./prometheus/config:/etc/prometheus
       - ./prometheus/data:/prometheus
-    restart: always
+    restart: unless-stopped
     networks:
       - monitoring
   grafana:
@@ -42,9 +42,7 @@ services:
     volumes:
       - ./grafana/data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
-    depends_on:
-      - prometheus
-    restart: always
+    restart: unless-stopped
     networks:
       - monitoring
 
