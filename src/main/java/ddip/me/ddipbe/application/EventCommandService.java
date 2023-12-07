@@ -8,6 +8,8 @@ import ddip.me.ddipbe.domain.repository.EventRepository;
 import ddip.me.ddipbe.domain.repository.SuccessRecordRepository;
 import ddip.me.ddipbe.global.util.CustomClock;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +64,7 @@ public class EventCommandService {
         eventRepository.delete(event);
     }
 
+    @CacheEvict(value = "events", key = "#uuid")
     public void updateEvent(
             UUID uuid,
             String title,
@@ -97,7 +100,7 @@ public class EventCommandService {
     }
 
     public void applyEvent(UUID uuid, String token) {
-        Event event = eventRepository.findByUuidForUpdate(uuid).orElseThrow(EventNotFoundException::new);
+        Event event = findByUuidForUpdate(uuid);
 
         if (!event.getEventDuration().isOpen(CustomClock.now())) {
             throw new EventNotOpenException();
@@ -111,9 +114,18 @@ public class EventCommandService {
     }
 
     public void registerSuccessRecordSuccessInputInfo(UUID uuid, Map<String, Object> formInputValue, String token) {
-        SuccessRecord successRecord = successRecordRepository.findByEventUuidAndToken(uuid, token)
-                .orElseThrow(SuccessRecordNotFoundException::new);
+        SuccessRecord successRecord = findByEventUuidAndToken(uuid, token);
 
         successRecord.registerFormInputValue(formInputValue);
+    }
+
+    @Cacheable(value = "events", key = "#uuid")
+    public Event findByUuidForUpdate(UUID uuid){
+        return eventRepository.findByUuidForUpdate(uuid).orElseThrow(EventNotFoundException::new);
+    }
+
+    @Cacheable(value = "events", key = "#uuid + #token")
+    public SuccessRecord findByEventUuidAndToken(UUID uuid, String token) {
+        return successRecordRepository.findByEventUuidAndToken(uuid, token).orElseThrow(SuccessRecordNotFoundException::new);
     }
 }
