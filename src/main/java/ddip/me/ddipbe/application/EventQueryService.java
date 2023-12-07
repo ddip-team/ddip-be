@@ -14,6 +14,8 @@ import ddip.me.ddipbe.domain.repository.SuccessRecordRepository;
 import ddip.me.ddipbe.global.dto.CustomPageable;
 import ddip.me.ddipbe.global.util.CustomClock;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -25,16 +27,19 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "events")
 public class EventQueryService {
 
     private final EventRepository eventRepository;
     private final SuccessRecordRepository successRecordRepository;
 
+    @Cacheable(key = "#uuid")
     public EventWithMemberDto findEventByUuid(UUID uuid) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
         return new EventWithMemberDto(event);
     }
 
+    @Cacheable(key = "#memberId + #page + #size + #filterOpen.toString()")
     public Page<EventDto> findOwnEvents(long memberId, int page, int size, boolean filterOpen) {
         Page<Event> eventPage;
         if (filterOpen) {
@@ -52,6 +57,7 @@ public class EventQueryService {
         return eventPage.map(EventDto::new);
     }
 
+    @Cacheable(key = "#uuid + #memberId + #token")
     public SuccessResult findEventSuccessResult(UUID uuid, Long memberId, String token) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
@@ -69,6 +75,7 @@ public class EventQueryService {
         return event.getSuccessResult();
     }
 
+    @Cacheable(key = "#memberId + #uuid + #page + #size")
     public Page<SuccessRecordDto> findSuccessRecords(long memberId, UUID uuid, int page, int size) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
@@ -84,6 +91,7 @@ public class EventQueryService {
         return successRecordPage.map(SuccessRecordDto::new);
     }
 
+    @Cacheable(key = "#uuid + #token")
     public Map<String, Object> findSuccessRecordFormInputValue(UUID uuid, String token) {
         SuccessRecord successRecord = successRecordRepository.findByEventUuidAndToken(uuid, token)
                 .orElseThrow(SuccessRecordNotFoundException::new);
@@ -95,3 +103,4 @@ public class EventQueryService {
         return successRecord.getFormInputValue();
     }
 }
+
