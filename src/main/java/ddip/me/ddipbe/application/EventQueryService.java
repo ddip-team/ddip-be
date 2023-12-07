@@ -57,7 +57,7 @@ public class EventQueryService {
         return eventPage.map(EventDto::new);
     }
 
-    @Cacheable(key = "#uuid + #memberId + #token")
+    @Cacheable(key = "#uuid.toString() + #memberId.toString() + #token")
     public SuccessResult findEventSuccessResult(UUID uuid, Long memberId, String token) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
@@ -75,7 +75,7 @@ public class EventQueryService {
         return event.getSuccessResult();
     }
 
-    @Cacheable(key = "#memberId + #uuid + #page + #size")
+    @Cacheable(key = "#memberId.toString() + #uuid.toString() + #page.toString() + #size.toString()")
     public Page<SuccessRecordDto> findSuccessRecords(long memberId, UUID uuid, int page, int size) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
