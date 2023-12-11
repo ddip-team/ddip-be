@@ -64,7 +64,6 @@ public class EventCommandService {
         eventRepository.delete(event);
     }
 
-    @CacheEvict(value = "events", key = "#uuid")
     public void updateEvent(
             UUID uuid,
             String title,
@@ -100,7 +99,7 @@ public class EventCommandService {
     }
 
     public void applyEvent(UUID uuid, String token) {
-        Event event = findByUuidForUpdate(uuid);
+        Event event = eventRepository.findByUuidForUpdate(uuid).orElseThrow(EventNotFoundException::new);
 
         if (!event.getEventDuration().isOpen(CustomClock.now())) {
             throw new EventNotOpenException();
@@ -114,18 +113,8 @@ public class EventCommandService {
     }
 
     public void registerSuccessRecordSuccessInputInfo(UUID uuid, Map<String, Object> formInputValue, String token) {
-        SuccessRecord successRecord = findByEventUuidAndToken(uuid, token);
+        SuccessRecord successRecord = successRecordRepository.findByEventUuidAndToken(uuid, token).orElseThrow(SuccessRecordNotFoundException::new);
 
         successRecord.registerFormInputValue(formInputValue);
-    }
-
-    @Cacheable(value = "events", key = "#uuid")
-    public Event findByUuidForUpdate(UUID uuid){
-        return eventRepository.findByUuidForUpdate(uuid).orElseThrow(EventNotFoundException::new);
-    }
-
-    @Cacheable(value = "events", key = "#uuid + #token")
-    public SuccessRecord findByEventUuidAndToken(UUID uuid, String token) {
-        return successRecordRepository.findByEventUuidAndToken(uuid, token).orElseThrow(SuccessRecordNotFoundException::new);
     }
 }

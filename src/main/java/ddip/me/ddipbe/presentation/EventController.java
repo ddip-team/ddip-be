@@ -17,6 +17,8 @@ import ddip.me.ddipbe.presentation.dto.response.FormInputValueRes;
 import ddip.me.ddipbe.presentation.dto.response.PageRes;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -53,12 +55,14 @@ public class EventController {
     }
 
     @GetMapping("{uuid}")
+    @Cacheable(value = "events", key = "#uuid")
     public ResponseEnvelope<EventDetailRes> findEventByUuid(@PathVariable UUID uuid) {
         EventWithMemberDto eventByUuid = eventQueryService.findEventByUuid(uuid);
         return ResponseEnvelope.of(new EventDetailRes(eventByUuid));
     }
 
     @GetMapping("me")
+    @Cacheable(value ="events" ,key = "#memberId + #pageReq.page() + #pageReq.size() + (#open == null ? false : true ).toString()")
     public ResponseEnvelope<PageRes<EventDto>> findOwnEvents(
             @SessionMemberId Long memberId,
             @Valid PageReq pageReq,
@@ -71,6 +75,7 @@ public class EventController {
     }
 
     @GetMapping("{uuid}/success-records")
+    @Cacheable(value ="events", key = "#memberId.toString() + #uuid.toString() + #pageReq.page() + #pageReq.size()")
     public ResponseEnvelope<PageRes<SuccessRecordDto>> findSuccessRecords(
             @SessionMemberId Long memberId,
             @PathVariable UUID uuid,
@@ -85,12 +90,14 @@ public class EventController {
     }
 
     @DeleteMapping("{uuid}")
+    @Cacheable(value = "events", key = "#uuid")
     public ResponseEnvelope<?> deleteEvent(@PathVariable UUID uuid, @SessionMemberId Long memberId) {
         eventCommandService.deleteEvent(uuid, memberId);
         return ResponseEnvelope.of(null);
     }
 
     @PutMapping("{uuid}")
+    @CacheEvict(value = "events", key = "#uuid")
     public ResponseEnvelope<?> updateEvent(
             @PathVariable UUID uuid,
             @RequestBody CreateEventReq createEventReq,
@@ -117,6 +124,7 @@ public class EventController {
     }
 
     @GetMapping("{uuid}/success")
+    @Cacheable(value ="events", key = "#uuid")
     public ResponseEnvelope<SuccessResult> findEventSuccessResult(
             @SessionMemberId(required = false) Long memberId,
             @PathVariable UUID uuid,
@@ -127,6 +135,7 @@ public class EventController {
     }
 
     @GetMapping("{uuid}/form")
+    @Cacheable(value = "successRecords", key = "#uuid + #token")
     public ResponseEnvelope<FormInputValueRes> findSuccessRecordFormInputValue(
             @PathVariable UUID uuid,
             @RequestParam String token
@@ -136,6 +145,7 @@ public class EventController {
     }
 
     @PostMapping("{uuid}/form")
+    @Cacheable(value = "successRecords", key = "#uuid + #token")
     public ResponseEnvelope<?> registerSuccessRecordFormInputValue(
             @PathVariable UUID uuid,
             @Valid @RequestBody RegisterFormInputValueReq registerFormInputValueReq,

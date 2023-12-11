@@ -33,13 +33,10 @@ public class EventQueryService {
     private final EventRepository eventRepository;
     private final SuccessRecordRepository successRecordRepository;
 
-    @Cacheable(key = "#uuid")
     public EventWithMemberDto findEventByUuid(UUID uuid) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
         return new EventWithMemberDto(event);
     }
-
-    @Cacheable(key = "#memberId + #page + #size + #filterOpen.toString()")
     public Page<EventDto> findOwnEvents(long memberId, int page, int size, boolean filterOpen) {
         Page<Event> eventPage;
         if (filterOpen) {
@@ -57,7 +54,6 @@ public class EventQueryService {
         return eventPage.map(EventDto::new);
     }
 
-    @Cacheable(key = "#uuid.toString() + #memberId.toString() + #token")
     public SuccessResult findEventSuccessResult(UUID uuid, Long memberId, String token) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
@@ -75,7 +71,6 @@ public class EventQueryService {
         return event.getSuccessResult();
     }
 
-    @Cacheable(key = "#memberId.toString() + #uuid.toString() + #page.toString() + #size.toString()")
     public Page<SuccessRecordDto> findSuccessRecords(long memberId, UUID uuid, int page, int size) {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
 
@@ -91,7 +86,6 @@ public class EventQueryService {
         return successRecordPage.map(SuccessRecordDto::new);
     }
 
-    @Cacheable(key = "#uuid + #token")
     public Map<String, Object> findSuccessRecordFormInputValue(UUID uuid, String token) {
         SuccessRecord successRecord = successRecordRepository.findByEventUuidAndToken(uuid, token)
                 .orElseThrow(SuccessRecordNotFoundException::new);
