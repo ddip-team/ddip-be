@@ -8,8 +8,6 @@ import ddip.me.ddipbe.domain.repository.EventRepository;
 import ddip.me.ddipbe.domain.repository.SuccessRecordRepository;
 import ddip.me.ddipbe.global.util.CustomClock;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,7 +103,7 @@ public class EventCommandService {
             throw new EventNotOpenException();
         }
 
-        if (successRecordRepository.existsByEventIdAndToken(event.getId(), token)){
+        if (successRecordRepository.existsByEventIdAndToken(event.getId(), token)) {
             throw new EventAlreadyAppliedException();
         }
 
@@ -113,7 +111,8 @@ public class EventCommandService {
     }
 
     public void registerSuccessRecordSuccessInputInfo(UUID uuid, Map<String, Object> formInputValue, String token) {
-        SuccessRecord successRecord = successRecordRepository.findByEventUuidAndToken(uuid, token).orElseThrow(SuccessRecordNotFoundException::new);
+        SuccessRecord successRecord = successRecordRepository.findByEventUuidAndToken(uuid, token)
+                .orElseThrow(SuccessRecordNotFoundException::new);
 
         successRecord.registerFormInputValue(formInputValue);
     }

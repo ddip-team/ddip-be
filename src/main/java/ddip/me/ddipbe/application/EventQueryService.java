@@ -14,8 +14,6 @@ import ddip.me.ddipbe.domain.repository.SuccessRecordRepository;
 import ddip.me.ddipbe.global.dto.CustomPageable;
 import ddip.me.ddipbe.global.util.CustomClock;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -27,7 +25,6 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = "events")
 public class EventQueryService {
 
     private final EventRepository eventRepository;
@@ -37,6 +34,7 @@ public class EventQueryService {
         Event event = eventRepository.findByUuid(uuid).orElseThrow(EventNotFoundException::new);
         return new EventWithMemberDto(event);
     }
+
     public Page<EventDto> findOwnEvents(long memberId, int page, int size, boolean filterOpen) {
         Page<Event> eventPage;
         if (filterOpen) {
@@ -97,4 +95,3 @@ public class EventQueryService {
         return successRecord.getFormInputValue();
     }
 }
-
