@@ -62,7 +62,7 @@ public class EventController {
     }
 
     @GetMapping("me")
-    @Cacheable(value ="events" ,key = "#memberId + #pageReq.page() + #pageReq.size() + (#open == null ? false : true ).toString()")
+    @Cacheable(value = "events", key = "#memberId  + (#open == null ? false : true ).toString()")
     public ResponseEnvelope<PageRes<EventDto>> findOwnEvents(
             @SessionMemberId Long memberId,
             @Valid PageReq pageReq,
@@ -75,7 +75,7 @@ public class EventController {
     }
 
     @GetMapping("{uuid}/success-records")
-    @Cacheable(value ="events", key = "#memberId.toString() + #uuid.toString() + #pageReq.page() + #pageReq.size()")
+    @Cacheable(value = "events", key = "#memberId.toString() + #uuid.toString() + #pageReq.page() + #pageReq.size()")
     public ResponseEnvelope<PageRes<SuccessRecordDto>> findSuccessRecords(
             @SessionMemberId Long memberId,
             @PathVariable UUID uuid,
@@ -90,7 +90,7 @@ public class EventController {
     }
 
     @DeleteMapping("{uuid}")
-    @Cacheable(value = "events", key = "#uuid")
+    @CacheEvict(value = "events", key = "#uuid")
     public ResponseEnvelope<?> deleteEvent(@PathVariable UUID uuid, @SessionMemberId Long memberId) {
         eventCommandService.deleteEvent(uuid, memberId);
         return ResponseEnvelope.of(null);
@@ -124,7 +124,7 @@ public class EventController {
     }
 
     @GetMapping("{uuid}/success")
-    @Cacheable(value ="events", key = "#uuid")
+    @Cacheable(value = "events", key = "#uuid")
     public ResponseEnvelope<SuccessResult> findEventSuccessResult(
             @SessionMemberId(required = false) Long memberId,
             @PathVariable UUID uuid,
@@ -145,7 +145,6 @@ public class EventController {
     }
 
     @PostMapping("{uuid}/form")
-    @Cacheable(value = "successRecords", key = "#uuid + #token")
     public ResponseEnvelope<?> registerSuccessRecordFormInputValue(
             @PathVariable UUID uuid,
             @Valid @RequestBody RegisterFormInputValueReq registerFormInputValueReq,
