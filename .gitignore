@@ -42,3 +42,4 @@ out/
 /docker/monitor/node-exporter/
 /docker/monitor/prometheus/data/
 /docker/monitor/prometheus/config/*.log
+/docker/monitor/thanos/store/

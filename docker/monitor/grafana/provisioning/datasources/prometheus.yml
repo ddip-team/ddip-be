@@ -5,7 +5,7 @@ datasources:
     type: prometheus
     uid: T
     access: proxy
-    url: http://prometheus:9090
+    url: http://thanos-querier:10904
     isDefault: true
     jsonData:
       timeInterval: 10s

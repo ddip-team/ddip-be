@@ -1,5 +1,9 @@
 resource "aws_s3_bucket" "default" {
-  bucket = var.s3_bucket_name
+  bucket = "${var.project_name}-bucket"
+}
+
+resource "aws_s3_bucket" "prometheus" {
+  bucket = "${var.project_name}-prometheus-thanos-data"
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {

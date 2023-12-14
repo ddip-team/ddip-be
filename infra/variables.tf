@@ -71,10 +71,6 @@ variable "db_engine_version" {
   default = "8.0.33"
 }
 
-variable "s3_bucket_name" {
-  default = "ddip-bucket"
-}
-
 # variable "db_init_script" {
 #   description = "SQL to initialise the RDS instance"
 #   default     = "initial-schema.sql"
