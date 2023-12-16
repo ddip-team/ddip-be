@@ -1,0 +1,7 @@
+type: S3
+config:
+  bucket: $(S3_BUCKET)
+  endpoint: s3.ap-northeast-2.amazonaws.com
+  aws_sdk_auth: false
+  insecure: false
+  signature_version2: false

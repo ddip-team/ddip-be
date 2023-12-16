@@ -1,0 +1,26 @@
+global:
+  scrape_interval: 10s
+  scrape_timeout: 10s
+  query_log_file: query_log_file.log # prometheus의 쿼리 로그들을 기록, 없으면 기록안함
+  external_labels:
+    monitor: 'ddip-monitor'
+    cluster: 'ddip-cluster'
+
+rule_files:
+  - "rule.yml"  # 파일 위치는 prometheus.yml 이 있는 곳과 동일 위치
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: [ 'prometheus:9090' ]
+
+  - job_name: 'node-exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'node-exporter:9100' ]
+
+  - job_name: 'spring-boot'
+    scrape_interval: 5s
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'host.docker.internal:8080' ]

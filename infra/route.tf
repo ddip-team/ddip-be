@@ -67,6 +67,15 @@ resource "aws_route53_record" "api" {
   zone_id         = aws_route53_zone.default.zone_id
 }
 
+resource "aws_route53_record" "monitor" {
+  allow_overwrite = true
+  name            = "monitor.${var.domain}"
+  ttl             = 60
+  type            = "CNAME"
+  records         = [aws_alb.default.dns_name]
+  zone_id         = aws_route53_zone.default.zone_id
+}
+
 resource "aws_route53_record" "cdn" {
   allow_overwrite = true
   name            = "cdn.${var.domain}"
