@@ -55,14 +55,13 @@ public class EventController {
     }
 
     @GetMapping("{uuid}")
-    @Cacheable(value = "events", key = "#uuid")
+    @Cacheable(value = "events", key = "'/events/uuid'", sync = true)
     public ResponseEnvelope<EventDetailRes> findEventByUuid(@PathVariable UUID uuid) {
         EventWithMemberDto eventByUuid = eventQueryService.findEventByUuid(uuid);
         return ResponseEnvelope.of(new EventDetailRes(eventByUuid));
     }
 
     @GetMapping("me")
-    @Cacheable(value = "events", key = "#memberId  + (#open == null ? false : true ).toString()")
     public ResponseEnvelope<PageRes<EventDto>> findOwnEvents(
             @SessionMemberId Long memberId,
             @Valid PageReq pageReq,
@@ -75,7 +74,6 @@ public class EventController {
     }
 
     @GetMapping("{uuid}/success-records")
-    @Cacheable(value = "events", key = "#memberId.toString() + #uuid.toString() + #pageReq.page() + #pageReq.size()")
     public ResponseEnvelope<PageRes<SuccessRecordDto>> findSuccessRecords(
             @SessionMemberId Long memberId,
             @PathVariable UUID uuid,
@@ -90,14 +88,14 @@ public class EventController {
     }
 
     @DeleteMapping("{uuid}")
-    @CacheEvict(value = "events", key = "#uuid")
+    @CacheEvict(value = "events", key = "'/events/uuid'")
     public ResponseEnvelope<?> deleteEvent(@PathVariable UUID uuid, @SessionMemberId Long memberId) {
         eventCommandService.deleteEvent(uuid, memberId);
         return ResponseEnvelope.of(null);
     }
 
     @PutMapping("{uuid}")
-    @CacheEvict(value = "events", key = "#uuid")
+    @CacheEvict(value = "events", key = "'/events/uuid'")
     public ResponseEnvelope<?> updateEvent(
             @PathVariable UUID uuid,
             @RequestBody CreateEventReq createEventReq,
@@ -124,7 +122,7 @@ public class EventController {
     }
 
     @GetMapping("{uuid}/success")
-    @Cacheable(value = "events", key = "#uuid")
+    @Cacheable(value = "events", key = "'/events/uuid/success'")
     public ResponseEnvelope<SuccessResult> findEventSuccessResult(
             @SessionMemberId(required = false) Long memberId,
             @PathVariable UUID uuid,

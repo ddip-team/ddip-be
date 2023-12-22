@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class MemberController {
     private final MemberCommandService memberCommandService;
 
     @GetMapping("me")
+    @Cacheable(value = "members", key = "#memberId")
     public ResponseEnvelope<MemberDto> getMe(@SessionMemberId Long memberId) {
         MemberDto member = memberQueryService.findById(memberId);
 
