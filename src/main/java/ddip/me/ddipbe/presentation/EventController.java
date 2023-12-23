@@ -17,6 +17,8 @@ import ddip.me.ddipbe.presentation.dto.response.FormInputValueRes;
 import ddip.me.ddipbe.presentation.dto.response.PageRes;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +55,7 @@ public class EventController {
     }
 
     @GetMapping("{uuid}")
+    @Cacheable(value = "events", key = "'/events/uuid'", sync = true)
     public ResponseEnvelope<EventDetailRes> findEventByUuid(@PathVariable UUID uuid) {
         EventWithMemberDto eventByUuid = eventQueryService.findEventByUuid(uuid);
         return ResponseEnvelope.of(new EventDetailRes(eventByUuid));
@@ -85,12 +88,14 @@ public class EventController {
     }
 
     @DeleteMapping("{uuid}")
+    @CacheEvict(value = "events", key = "'/events/uuid'")
     public ResponseEnvelope<?> deleteEvent(@PathVariable UUID uuid, @SessionMemberId Long memberId) {
         eventCommandService.deleteEvent(uuid, memberId);
         return ResponseEnvelope.of(null);
     }
 
     @PutMapping("{uuid}")
+    @CacheEvict(value = "events", key = "'/events/uuid'")
     public ResponseEnvelope<?> updateEvent(
             @PathVariable UUID uuid,
             @RequestBody CreateEventReq createEventReq,
@@ -117,6 +122,7 @@ public class EventController {
     }
 
     @GetMapping("{uuid}/success")
+    @Cacheable(value = "events", key = "'/events/uuid/success'")
     public ResponseEnvelope<SuccessResult> findEventSuccessResult(
             @SessionMemberId(required = false) Long memberId,
             @PathVariable UUID uuid,
@@ -127,6 +133,7 @@ public class EventController {
     }
 
     @GetMapping("{uuid}/form")
+    @Cacheable(value = "successRecords", key = "#uuid + #token")
     public ResponseEnvelope<FormInputValueRes> findSuccessRecordFormInputValue(
             @PathVariable UUID uuid,
             @RequestParam String token

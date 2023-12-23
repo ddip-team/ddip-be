@@ -103,7 +103,7 @@ public class EventCommandService {
             throw new EventNotOpenException();
         }
 
-        if (successRecordRepository.existsByEventIdAndToken(event.getId(), token)){
+        if (successRecordRepository.existsByEventIdAndToken(event.getId(), token)) {
             throw new EventAlreadyAppliedException();
         }
 
